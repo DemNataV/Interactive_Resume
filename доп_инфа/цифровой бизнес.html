@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Бизнес-оркестратор — графовый движок процессов</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: #0b0d10;
+            color: #e5e7eb;
+            line-height: 1.6;
+            padding: 2rem 1rem;
+        }
+
+        .slide {
+            max-width: 1100px;
+            margin: 0 auto 4rem auto;
+            background: #14181c;
+            border-radius: 32px;
+            padding: 3rem 2.5rem;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.7);
+            border: 1px solid #2a3036;
+        }
+
+        h1 {
+            font-size: 3.2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #f0b34b, #f7d68a);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.02em;
+        }
+
+        h2 {
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: #f0b34b;
+            letter-spacing: -0.01em;
+        }
+
+        h3 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #d1d5db;
+            margin-bottom: 0.8rem;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #9ca3af;
+            margin-bottom: 2rem;
+            border-left: 4px solid #f0b34b;
+            padding-left: 1.2rem;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 1.8rem;
+        }
+
+        .grid-4 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .card {
+            background: #1e262d;
+            border-radius: 18px;
+            padding: 1.8rem 1.6rem;
+            border: 1px solid #2f3840;
+            transition: 0.2s;
+        }
+
+        .card:hover {
+            border-color: #f0b34b;
+            transform: translateY(-3px);
+        }
+
+        .card-icon {
+            font-size: 2.2rem;
+            margin-bottom: 0.6rem;
+        }
+
+        .card h4 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #f0b34b;
+            margin-bottom: 0.5rem;
+        }
+
+        .card p, .card li {
+            color: #c8cdd4;
+            font-size: 0.95rem;
+        }
+
+        .card ul {
+            padding-left: 1.2rem;
+            margin-top: 0.5rem;
+        }
+
+        .card ul li {
+            margin-bottom: 0.3rem;
+        }
+
+        .highlight-box {
+            background: #1e2a21;
+            border: 1px solid #3a5a3a;
+            border-radius: 16px;
+            padding: 1.6rem 2rem;
+            margin: 1.8rem 0;
+        }
+
+        .highlight-box strong {
+            color: #f0b34b;
+        }
+
+        .tag {
+            display: inline-block;
+            background: #2a323a;
+            padding: 0.2rem 0.9rem;
+            border-radius: 30px;
+            font-size: 0.75rem;
+            letter-spacing: 0.02em;
+            color: #b0b8c0;
+            margin-right: 0.4rem;
+        }
+
+        /* ---- АНИМИРОВАННЫЙ ГРАФ (идея 1) ---- */
+        .graph-container {
+            background: #0e151b;
+            border-radius: 16px;
+            padding: 2rem 1.5rem;
+            border: 1px solid #2a333b;
+            position: relative;
+            overflow: hidden;
+            min-height: 300px;
+        }
+
+        .graph-flow {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .graph-node {
+            background: #1a242e;
+            border: 1px solid #3a4a5a;
+            border-radius: 12px;
+            padding: 0.8rem 1.2rem;
+            min-width: 100px;
+            text-align: center;
+            font-size: 0.85rem;
+            color: #c8d4e0;
+            position: relative;
+            flex: 1 0 auto;
+        }
+
+        .graph-node .node-title {
+            font-weight: 600;
+            color: #f0b34b;
+            font-size: 0.9rem;
+        }
+
+        .graph-node .node-meta {
+            font-size: 0.7rem;
+            color: #8a9aaa;
+            margin-top: 0.2rem;
+        }
+
+        .graph-node .node-metric {
+            font-size: 0.7rem;
+            color: #7ec8e3;
+            background: #0a141e;
+            padding: 0.1rem 0.5rem;
+            border-radius: 10px;
+            display: inline-block;
+            margin-top: 0.2rem;
+        }
+
+        .graph-arrow {
+            font-size: 1.5rem;
+            color: #4a5a6a;
+            flex-shrink: 0;
+            animation: pulseArrow 1.8s ease-in-out infinite;
+        }
+
+        .graph-arrow .resource-label {
+            font-size: 0.55rem;
+            color: #a8d5a2;
+            display: block;
+            text-align: center;
+            margin-top: -0.3rem;
+        }
+
+        @keyframes pulseArrow {
+            0%, 100% { opacity: 0.5; transform: translateX(0); }
+            50% { opacity: 1; transform: translateX(4px); }
+        }
+
+        /* ---- БЛОК ДОВЕРИЯ (идея 6) ---- */
+        .trust-item {
+            text-align: center;
+            padding: 1rem;
+        }
+
+        .trust-item .number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #f0b34b;
+        }
+
+        .trust-item .label {
+            font-size: 0.85rem;
+            color: #9ca3af;
+        }
+
+        /* ---- КНОПКА ---- */
+        .btn-demo {
+            display: inline-block;
+            background: #f0b34b;
+            color: #0b0d10;
+            font-weight: 600;
+            padding: 0.9rem 2.5rem;
+            border-radius: 40px;
+            text-decoration: none;
+            margin-top: 0.8rem;
+            font-size: 1.1rem;
+            transition: 0.2s;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-demo:hover {
+            background: #f7c96a;
+            transform: scale(1.02);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: 1px solid #4a5a6a;
+            color: #c8d0d8;
+            padding: 0.8rem 2rem;
+            border-radius: 40px;
+            text-decoration: none;
+            font-size: 1rem;
+            transition: 0.2s;
+            display: inline-block;
+            margin-left: 0.5rem;
+        }
+
+        .btn-secondary:hover {
+            border-color: #f0b34b;
+            color: #f0b34b;
+        }
+
+        .pill-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.6rem;
+            margin-top: 0.6rem;
+        }
+
+        .pill {
+            background: #1e2a33;
+            padding: 0.3rem 1rem;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            border: 1px solid #2f3d48;
+            color: #c8d0d8;
+        }
+
+        .badge-businessolog {
+            background: #2a1f0a;
+            border: 1px solid #f0b34b;
+            color: #f0b34b;
+            padding: 0.15rem 0.8rem;
+            border-radius: 30px;
+            font-size: 0.7rem;
+            letter-spacing: 0.04em;
+            display: inline-block;
+            margin-left: 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .slide { padding: 1.8rem 1.2rem; }
+            h1 { font-size: 2.2rem; }
+            .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+            .graph-flow { flex-direction: column; }
+            .graph-arrow { transform: rotate(90deg); }
+        }
+
+        .divider {
+            border: none;
+            border-top: 1px solid #2a333b;
+            margin: 2.2rem 0;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ============================================================ -->
+    <!-- СЛАЙД 1: ЗАГОЛОВОК (усилен бизнесолог)                       -->
+    <!-- ============================================================ -->
+    <div class="slide">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap;">
+            <div>
+                <span class="tag">🚀 новая парадигма</span>
+                <h1>Бизнес-оркестратор</h1>
+                <div class="subtitle">
+                    Графовый движок процессов, где люди и агенты работают в единой системе
+                    <span class="badge-businessolog">бизнесолог</span>
+                </div>
+            </div>
+            <div style="margin-top: 0.5rem; font-size: 0.95rem; color: #9ca3af; text-align: right;">
+                <span class="pill">консалтинг</span>
+                <span class="pill">агенты</span>
+                <span class="pill">оркестрация</span>
+                <span class="pill">граф</span>
+            </div>
+        </div>
+        <p style="font-size: 1.1rem; color: #b0bcc8; margin-top: 0.5rem;">
+            <strong style="color: #f0b34b;">Бизнесолог</strong> — это специалист, который превращает бизнес-процесс в <strong style="color: #f0b34b;">живой граф</strong>.
+            Каждый этап видим, измерим и управляем. Консультанты внедряют систему, владелец получает <strong style="color: #f0b34b;">цифровой двойник</strong> своего бизнеса.
+        </p>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- СЛАЙД 2: ПРОБЛЕМА                                            -->
+    <!-- ============================================================ -->
+    <div class="slide">
+        <h2>🧩 Проблема</h2>
+        <div class="grid-2">
+            <div class="card" style="height: 100%;">
+                <div class="card-icon">😵</div>
+                <h4>Бизнес — чёрный ящик</h4>
+                <p>Владелец не видит процесс целиком. Этапы разорваны, стыки между отделами — слепые зоны.</p>
+                <ul>
+                    <li>❌ Решения принимаются по ощущениям</li>
+                    <li>❌ Узкие места видны только когда уже «горит»</li>
+                    <li>❌ Ручная координация съедает 30% времени</li>
+                </ul>
+            </div>
+            <div class="card" style="height: 100%;">
+                <div class="card-icon">🤖</div>
+                <h4>Агенты и люди — порознь</h4>
+                <p>Боты и люди живут в разных мирах. Агенты делают свою часть, люди — свою, стыки не синхронизированы.</p>
+                <ul>
+                    <li>❌ Нет единого интерфейса для управления и людьми, и агентами</li>
+                    <li>❌ Агенты внедряются как «надстройка», а не часть процесса</li>
+                    <li>❌ Изменение процесса требует разработки, а не рисования</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- СЛАЙД 3: РЕШЕНИЕ + АНИМИРОВАННЫЙ ГРАФ (идеи 1, 4, 5)        -->
+    <!-- ============================================================ -->
+    <div class="slide">
+        <h2>⚙️ Решение: графовый оркестратор</h2>
+        <div class="two-col-layout">
+            <div>
+                <p style="font-size: 1.05rem; color: #c8d0d8;">
+                    Каждый этап бизнес-процесса становится <strong style="color: #f0b34b;">узлом графа</strong>.
+                    Узел имеет вход, выход, владельца и <strong style="color: #7ec8e3;">метрики</strong>.
+                </p>
+                <ul style="margin-top: 1rem; color: #b8c4d0; font-size: 0.98rem; list-style: none; padding-left: 0;">
+                    <li style="margin-bottom: 0.6rem;">📌 <strong style="color: #e5e7eb;">Узел</strong> — этап процесса</li>
+                    <li style="margin-bottom: 0.6rem;">📥 <strong style="color: #7ec8e3;">Вход</strong> — ресурс на входе</li>
+                    <li style="margin-bottom: 0.6rem;">📤 <strong style="color: #a8d5a2;">Выход</strong> — ресурс на выходе</li>
+                    <li style="margin-bottom: 0.6rem;">📊 <strong style="color: #f0b34b;">Метрика</strong> — время, объём, стоимость</li>
+                    <li style="margin-bottom: 0.6rem;">👤 <strong style="color: #d1d5db;">Владелец</strong> — человек или агент</li>
+                </ul>
+            </div>
+            <div>
+                <div class="card" style="background: #0e151b;">
+                    <h4 style="color: #f0b34b; margin-top: 0;">📋 Живой граф процесса</h4>
+                    <div class="graph-container">
+                        <div class="graph-flow">
+                            <!-- Узел 1 -->
+                            <div class="graph-node" style="border-color: #f0b34b;">
+                                <div class="node-title">📞 Входящий звонок</div>
+                                <div class="node-meta">вход: заявка</div>
+                                <div class="node-meta">владелец: менеджер</div>
+                                <div class="node-metric">⏱️ ср. время: 4 мин</div>
+                            </div>
+
+                            <div class="graph-arrow">
+                                →
+                                <span class="resource-label">📄 заявка</span>
+                            </div>
+
+                            <!-- Узел 2 -->
+                            <div class="graph-node" style="border-color: #7ec8e3;">
+                                <div class="node-title">🧠 Квалификация лида</div>
+                                <div class="node-meta">вход: заявка</div>
+                                <div class="node-meta">владелец: менеджер</div>
+                                <div class="node-metric">📊 конверсия: 34%</div>
+                            </div>
+
+                            <div class="graph-arrow">
+                                →
+                                <span class="resource-label">✅ квалифицирован</span>
+                            </div>
+
+                            <!-- Узел 3 -->
+                            <div class="graph-node" style="border-color: #a8d5a2;">
+                                <div class="node-title">🤖 Выставление счёта</div>
+                                <div class="node-meta">вход: квалиф. лид</div>
+                                <div class="node-meta">владелец: агент-бот</div>
+                                <div class="node-metric">⚡ автомат: 100%</div>
+                            </div>
+
+                            <div class="graph-arrow">
+                                →
+                                <span class="resource-label">💰 счёт</span>
+                            </div>
+
+                            <!-- Узел 4 -->
+                            <div class="graph-node" style="border-color: #f0b34b;">
+                                <div class="node-title">✅ Закрытие сделки</div>
+                                <div class="node-meta">вход: счёт</div>
+                                <div class="node-meta">владелец: менеджер</div>
+                                <div class="node-metric">📈 рост: +22%</div>
+                            </div>
+                        </div>
+                        <p style="color: #6b7b8b; font-size: 0.75rem; text-align: center; margin-top: 1rem;">
+                            🔄 Ресурсы движутся по графу — каждый узел видит свой вход и передаёт выход дальше
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- СЛАЙД 4: АГЕНТЫ И ЛЮДИ В ОДНОМ ГРАФЕ                         -->
+    <!-- ============================================================ -->
+    <div class="slide">
+        <h2>🤖 Агенты как узлы графа</h2>
+        <div class="highlight-box">
+            <p style="font-size: 1.1rem;">
+                <strong>Люди и агенты существуют в одном графе.</strong><br />
+                Агент — это такой же узел, как и человек. У него есть вход, выход, логика и метрики.
+                Оркестратор управляет передачей ресурсов между ними.
+            </p>
+        </div>
+        <div class="grid-3">
+            <div class="card">
+                <div class="card-icon">👤</div>
+                <h4>Человек-узел</h4>
+                <p>Елена Викторовна одобряет поставку. Вход — заявка, выход — одобренная заявка.</p>
+                <span class="tag">метрика: время одобрения</span>
+            </div>
+            <div class="card" style="border-color: #3a6a4a;">
+                <div class="card-icon">⚡</div>
+                <h4>Агент-узел</h4>
+                <p>Бот проверяет заявку на дубли, подставляет цены, отправляет на доработку.</p>
+                <span class="tag">метрика: % ошибок</span>
+                <span class="tag">автоматически</span>
+            </div>
+            <div class="card" style="border-color: #4a5a6a;">
+                <div class="card-icon">🔁</div>
+                <h4>Оркестратор</h4>
+                <p>Управляет передачей ресурсов между узлами, следит за сроками, переключает агентов.</p>
+                <span class="tag">единый интерфейс</span>
+            </div>
+        </div>
+        <p style="margin-top: 1.2rem; color: #9ca3af; font-size: 0.95rem;">
+            ➜ <strong style="color: #f0b34b;">Бизнесолог</strong> рисует граф вместе с владельцем, а система автоматически генерирует интерфейсы и связи.
+        </p>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- СЛАЙД 5: КОМУ ЭТО НУЖНО (идея 3)                             -->
+    <!-- ============================================================ -->
+    <div class="slide">
+        <h2>🎯 Кому это нужно</h2>
+        <div class="grid-3">
+            <div class="card" style="border-color: #f0b34b;">
+                <div class="card-icon">🏢</div>
+                <h4>Владельцу бизнеса</h4>
+                <ul>
+                    <li>✅ Видите весь процесс как на ладони</li>
+                    <li>✅ Находите узкие места до того, как они «горят»</li>
+                    <li>✅ Управляете компанией без хаоса и ручной координации</li>
+                    <li>✅ Автоматизируете рутину через агентов</li>
+                </ul>
+            </div>
+            <div class="card" style="border-color: #7ec8e3;">
+                <div class="card-icon">🧑‍💼</div>
+                <h4>Консультанту (бизнесологу)</h4>
+                <ul>
+                    <li>✅ Получаете мощный инструмент для диагностики</li>
+                    <li>✅ Масштабируете свою экспертизу через систему</li>
+                    <li>✅ Внедряете изменения быстрее и нагляднее</li>
+                    <li>✅ Создаёте долгосрочную ценность для клиента</li>
+                </ul>
+            </div>
+            <div class="card" style="border-color: #a8d5a2;">
+                <div class="card-icon">🤖</div>
+                <h4>Разработчику агентов</h4>
+                <ul>
+                    <li>✅ Создаёте решения, встраиваемые в процессы</li>
+                    <li>✅ Получаете процент от использования (маркетплейс)</li>
+                    <li>✅ Агент становится частью системы, а не отдельным ботом</li>
+                    <li>✅ Интеграция — один клик в интерфейсе</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- СЛАЙД 6: КОНСАЛТИНГОВАЯ МОДЕЛЬ                               -->
+    <!-- ============================================================ -->
+    <div class="slide">
+        <h2>🧑‍💼 Консалтинговая модель</h2>
+        <div class="grid-2">
+            <div>
+                <h3 style="color: #f0b34b;">Группа консультантов</h3>
+                <ul style="color: #b8c4d0; font-size: 1rem; line-height: 1.8;">
+                    <li><strong>Внедряют</strong> графовую систему в бизнес клиента</li>
+                    <li><strong>Учат</strong> владельца пользоваться оркестратором</li>
+                    <li><strong>Рисуют</strong> процесс вместе с командой</li>
+                    <li><strong>Настраивают</strong> агентов и метрики</li>
+                    <li><strong>Сопровождают</strong> первые 2–3 месяца</li>
+                </ul>
+            </div>
+            <div>
+                <h3 style="color: #f0b34b;">Обучение</h3>
+                <ul style="color: #b8c4d0; font-size: 1rem; line-height: 1.8;">
+                    <li><strong>Курс</strong> для консультантов: «Как внедрять графовый оркестратор»</li>
+                    <li><strong>Курс</strong> для владельцев: «Как управлять бизнесом через граф»</li>
+                    <li><strong>Сертификация</strong> партнёров-консультантов</li>
+                    <li><strong>Сообщество</strong> практиков и обмен кейсами</li>
+                </ul>
+            </div>
+        </div>
+        <div class="highlight-box">
+            <p>📌 <strong>Ключевое:</strong> Консультант не просто «внедряет» — он <strong>переносит мышление</strong> владельца на графовую модель. Клиент получает инструмент, а не отчёт.</p>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- СЛАЙД 7: БИЗНЕС-МОДЕЛЬ (с блоком доверия)                    -->
+    <!-- ============================================================ -->
+    <div class="slide">
+        <h2>💰 Бизнес-модель</h2>
+
+        <!-- блок доверия (идея 6) -->
+        <div class="grid-4" style="margin-bottom: 2rem;">
+            <div class="trust-item">
+                <div class="number">1 000 ₽</div>
+                <div class="label">за человека в месяц</div>
+            </div>
+            <div class="trust-item">
+                <div class="number">%</div>
+                <div class="label">с каждого агента в маркетплейсе</div>
+            </div>
+            <div class="trust-item">
+                <div class="number">200K</div>
+                <div class="label">₽ — консалтинговый проект</div>
+            </div>
+            <div class="trust-item">
+                <div class="number">∞</div>
+                <div class="label">масштабируется через партнёров</div>
+            </div>
+        </div>
+
+        <div class="grid-2">
+            <div>
+                <div class="card">
+                    <h4>💳 Оркестратор — подписка</h4>
+                    <ul>
+                        <li><strong>1 000 ₽</strong> / месяц за каждого человека в команде</li>
+                        <li>Включает: графовый движок, интерфейс, метрики, передачу ресурсов</li>
+                        <li>Доступ ко всем агентам из маркетплейса</li>
+                    </ul>
+                </div>
+            </div>
+            <div>
+                <div class="card">
+                    <h4>🤖 Агенты — маркетплейс</h4>
+                    <ul>
+                        <li><strong>Процент от стоимости</strong> каждого агента (как макеты на маркетплейсах)</li>
+                        <li>Агенты интегрированы в оркестратор — «купил и вставил в граф»</li>
+                        <li>Разработчики агентов получают долю, мы — свою</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="highlight-box" style="margin-top: 1.2rem;">
+            <p>🔥 <strong>Эффект масштаба:</strong> один оркестратор обслуживает всех клиентов. Консультанты внедряют, система приносит пассивный доход.</p>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- СЛАЙД 8: ДОРОЖНАЯ КАРТА                                       -->
+    <!-- ============================================================ -->
+    <div class="slide">
+        <h2>🚀 Дорожная карта</h2>
+        <div style="display: flex; flex-direction: column; gap: 1rem;">
+            <div style="display: flex; align-items: center; gap: 1rem; background: #1e262d; padding: 1rem 1.5rem; border-radius: 14px;">
+                <span style="font-size: 1.8rem;">1️⃣</span>
+                <div><strong>MVP оркестратора</strong> — графовый движок, интерфейс рисования, базовая передача ресурсов между узлами.</div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 1rem; background: #1e262d; padding: 1rem 1.5rem; border-radius: 14px;">
+                <span style="font-size: 1.8rem;">2️⃣</span>
+                <div><strong>Пилот с 2–3 компаниями</strong> — бесплатное внедрение в обмен на кейсы и отзывы.</div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 1rem; background: #1e262d; padding: 1rem 1.5rem; border-radius: 14px;">
+                <span style="font-size: 1.8rem;">3️⃣</span>
+                <div><strong>Маркетплейс агентов</strong> — интеграция первых ботов, настройка системы комиссий.</div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 1rem; background: #1e262d; padding: 1rem 1.5rem; border-radius: 14px;">
+                <span style="font-size: 1.8rem;">4️⃣</span>
+                <div><strong>Обучение консультантов</strong> — первые 5 консультантов проходят программу и начинают внедрять самостоятельно.</div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 1rem; background: #1e262d; padding: 1rem 1.5rem; border-radius: 14px;">
+                <span style="font-size: 1.8rem;">5️⃣</span>
+                <div><strong>Масштабирование</strong> — выход на средние компании, запуск партнёрской программы.</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- СЛАЙД 9: ПРИЗЫВ С КОНКРЕТНЫМ ДЕЙСТВИЕМ (идея 7)              -->
+    <!-- ============================================================ -->
+    <div class="slide">
+        <h2>🔥 Присоединяйтесь</h2>
+        <div class="highlight-box" style="text-align: center;">
+            <p style="font-size: 1.3rem;">
+                Мы строим <strong style="color: #f0b34b;">новый тип управления</strong> — где бизнес-процесс становится<br />
+                живым графом, а люди и агенты работают как единая система.
+            </p>
+            <p style="font-size: 1rem; margin-top: 1rem; color: #c8d4e0;">
+                Если вы владелец бизнеса, консультант или разработчик агентов —<br />
+                мы ищем первых партнёров и пилотных клиентов.
+            </p>
+            <div style="margin-top: 1.5rem;">
+                <a href="#" class="btn-demo" onclick="alert('Свяжитесь со мной: demnatav@gmail.com\n\nБесплатная 30-минутная демонстрация на вашем реальном процессе.'); return false;">
+                    📩 Получить демо-доступ
+                </a>
+                <span style="display: block; margin-top: 0.8rem; color: #9ca3af; font-size: 0.95rem;">
+                    🎁 <strong style="color: #f0b34b;">Бесплатная 30-минутная демонстрация</strong> на вашем реальном процессе — покажем, как выглядит ваш бизнес в виде графа
+                </span>
+            </div>
+        </div>
+        <div style="text-align: center; margin-top: 1.5rem;">
+            <span style="color: #6b7b8b; font-size: 0.85rem;">Наталия Демина | бизнесолог</span>
+            <span style="color: #4a5a6a; margin: 0 0.5rem;">|</span>
+            <span style="color: #6b7b8b; font-size: 0.85rem;">демо-версия оркестратора — в разработке</span>
+        </div>
+    </div>
+
+</body>
+</html>

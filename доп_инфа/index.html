@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Наталия Демина | Внедрение ИИ и трансформация процессов</title>
+    <style>
+        /* ===== RESET & BASE ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #ffffff;
+            color: #1a1a1a;
+            line-height: 1.6;
+            padding: 2rem 1rem;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        /* ===== ЗАГОЛОВОК С ЛОГОТИПОМ ===== */
+        .header-with-logo {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .header-with-logo img {
+            flex-shrink: 0;
+            width: 150px;
+            height: 120px;
+        }
+
+        .header-text h1 {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 2.8rem;
+            font-weight: 600;
+            line-height: 1.2;
+            color: #1a1a1a;
+            margin-bottom: 0.1rem;
+        }
+
+        .header-text .subhead {
+            font-size: 1.2rem;
+            color: #c9a84c;
+            font-weight: 400;
+            margin-bottom: 0.1rem;
+        }
+
+        .header-text .total-experience {
+            font-size: 0.95rem;
+            color: #6a6a6a;
+        }
+
+        .divider {
+            width: 60px;
+            height: 2px;
+            background: #c9a84c;
+            margin: 1.5rem 0 2rem 0;
+        }
+
+        /* ===== ТИПОГРАФИКА ===== */
+        h2 {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 1.6rem;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-top: 2.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        p,
+        li {
+            color: #2c2c2c;
+            font-size: 1rem;
+        }
+
+        a {
+            color: #c9a84c;
+            text-decoration: none;
+            border-bottom: 1px solid rgba(201, 168, 76, 0.3);
+            transition: border-color 0.2s;
+        }
+
+        a:hover {
+            border-bottom-color: #c9a84c;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+            margin: 0.5rem 0 1rem 0;
+        }
+
+        ul li {
+            padding-left: 1.25rem;
+            position: relative;
+            margin-bottom: 0.3rem;
+        }
+
+        ul li::before {
+            content: "—";
+            position: absolute;
+            left: 0;
+            color: #c9a84c;
+        }
+
+        /* ===== СПОЙЛЕР ===== */
+        details {
+            background: #f8f6f2;
+            border-radius: 12px;
+            padding: 0.75rem 1.5rem 0.75rem 1.5rem;
+            margin-bottom: 1.25rem;
+            border-left: 3px solid #c9a84c;
+            transition: background 0.2s;
+        }
+
+        details:hover {
+            background: #f3efe8;
+        }
+
+        details summary {
+            font-weight: 600;
+            font-size: 1.05rem;
+            cursor: pointer;
+            color: #1a1a1a;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.5rem;
+            list-style: none;
+            padding: 0.25rem 0;
+        }
+
+        details summary::-webkit-details-marker {
+            display: none;
+        }
+
+        details summary::after {
+            content: "▸";
+            font-size: 1.2rem;
+            color: #c9a84c;
+            transition: transform 0.25s ease;
+        }
+
+        details[open] summary::after {
+            transform: rotate(90deg);
+        }
+
+        details .details-content {
+            padding-top: 0.75rem;
+            border-top: 1px solid #e6e0d8;
+            margin-top: 0.5rem;
+        }
+
+        details .details-content p {
+            margin-bottom: 0.5rem;
+        }
+
+        details .details-content ul {
+            margin-bottom: 0.25rem;
+        }
+
+        /* ===== БЛОК "О СЕБЕ" ===== */
+        .about-block {
+            background: #f8f6f2;
+            border-radius: 16px;
+            padding: 1.8rem 2rem;
+            margin: 1.5rem 0 2.5rem 0;
+            border-left: 3px solid #c9a84c;
+        }
+
+        .about-block p {
+            margin-bottom: 0.75rem;
+        }
+
+        .about-block .gold {
+            color: #c9a84c;
+            font-weight: 500;
+        }
+
+        /* ===== КНОПКА PDF ===== */
+        .pdf-button-wrapper {
+            text-align: right;
+            margin-bottom: 1rem;
+        }
+
+        .pdf-button {
+            background: #1a1a1a;
+            color: #ffffff;
+            border: none;
+            padding: 0.5rem 1.8rem;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            font-family: 'Inter', sans-serif;
+            letter-spacing: 0.02em;
+        }
+
+        .pdf-button:hover {
+            background: #c9a84c;
+            color: #1a1a1a;
+        }
+
+        .pdf-button:active {
+            transform: scale(0.96);
+        }
+
+        /* ===== КОНТАКТЫ ===== */
+        .contacts {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.2rem;
+            margin: 1.5rem 0 2rem 0;
+            padding-top: 0.5rem;
+        }
+
+        .contacts a {
+            font-size: 0.95rem;
+            border-bottom: none;
+        }
+
+        .contacts a:hover {
+            color: #b8943a;
+        }
+
+        /* ===== ФУТЕР ===== */
+        .footer {
+            margin-top: 3rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #eaeaea;
+            font-size: 0.8rem;
+            color: #8a8a8a;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        /* ===== ПЕЧАТЬ / PDF ===== */
+        @media print {
+            .pdf-button-wrapper {
+                display: none;
+            }
+            body {
+                padding: 0.5in;
+            }
+            details {
+                break-inside: avoid;
+            }
+            .about-block {
+                break-inside: avoid;
+            }
+            details {
+                display: block !important;
+            }
+            details summary::after {
+                display: none !important;
+            }
+            details .details-content {
+                display: block !important;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .header-with-logo {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.75rem;
+            }
+            .header-text h1 {
+                font-size: 2rem;
+            }
+            .container {
+                padding: 0 0.5rem;
+            }
+            .about-block {
+                padding: 1.25rem 1.25rem;
+            }
+            details {
+                padding: 0.6rem 1rem;
+            }
+        }
+
+        .pdf-print-mode details .details-content {
+            display: block !important;
+        }
+        .pdf-print-mode details summary::after {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+
+        <!-- ======================================== -->
+        <!-- ЗАГОЛОВОК С ЛОГОТИПОМ (logo.png) -->
+        <!-- ======================================== -->
+        <div class="header-with-logo">
+            <img src="logo.png" alt="Логотип" width="56" height="56" />
+            <div class="header-text">
+                <h1>Наталия Демина</h1>
+                <div class="subhead">QA → Процессы → Внедрение ИИ</div>
+                <div class="total-experience">Общий опыт: 11 лет 2 месяца</div>
+                <div class="total-experience">Физика (СГУ) + психология — системное мышление + понимание людей</div>
+            </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- ======================================== -->
+        <!-- PDF КНОПКА -->
+        <!-- ======================================== -->
+        <div class="pdf-button-wrapper">
+            <button class="pdf-button" onclick="printResume()">⬇ Скачать резюме (PDF)</button>
+        </div>
+
+        <!-- ======================================== -->
+        <!-- О СЕБЕ -->
+        <!-- ======================================== -->
+        <div class="about-block">
+            <p>
+                <span class="gold">✦</span> <strong>11 лет</strong> в управлении, IT и развитии команд: от инженера по тестированию до руководителя отдела в крупных технологических компаниях.
+                Последние годы занимаюсь <strong>внедрением ИИ и трансформацией процессов</strong> — проектирую и разрабатываю ИИ-инструменты, оркестрирую людей и AI-агентов, перестраиваю бизнес-процессы под новые технологии.
+            </p>
+            <p>
+                <span class="gold">✦</span> <strong>Мой взгляд на качество:</strong> QA — это не поиск багов (это QC/QT), а <strong>выстраивание процессов, при которых дефекты не появляются вовсе</strong>.
+                Всю карьеру я строила именно такие системы: единые правила сдачи задач, критерии готовности, end-to-end процессы, автоматизация регресса — чтобы качество было следствием процесса, а не героизмом тестировщиков в последний день релиза.
+            </p>
+            <p>
+                <span class="gold">✦</span> Моя сфера — <strong>внедрение ИИ и системная диагностика бизнеса</strong>.
+                Я соединяю теорию ограничений, управление вариабельностью,
+                принципы антихрупкости и работу с человеческим фактором
+                в единый подход. Помогаю компаниям находить и устранять разрывы между процессами, технологиями и людьми.
+            </p>
+            <p>
+                <span class="gold">✦</span> <strong>Что я делаю руками:</strong> разрабатываю платформу управления бизнес-процессами с ИИ-исполнителем (оркестрация AI-агентов через Telegram, интеграция LLM), делаю Telegram-ботов и одностраничные ИИ-приложения. Не только консультирую — внедряю.
+            </p>
+            <p>
+                <span class="gold">✦</span> <strong>Почему я приношу результат:</strong>
+                Я умею <strong>слушать</strong> — слышу не только слова, но и то, что скрыто за ними (страхи, сопротивления, невысказанные ожидания).
+                Я умею <strong>видеть систему</strong> — находить узкие места и стыки, где другие видят «так всегда работает».
+                Я умею <strong>переводить</strong> — с языка хаоса на язык процессов, с языка кода на язык бизнеса,
+                с языка эмоций на язык решений.
+                И я умею <strong>внедрять</strong> — не оставлять клиента с отчётом, а доводить изменения до привычки.
+            </p>
+        </div>
+
+        <!-- ======================================== -->
+        <!-- ИИ И ЦИФРОВАЯ ТРАНСФОРМАЦИЯ -->
+        <!-- ======================================== -->
+        <h2>ИИ и цифровая трансформация</h2>
+
+        <details>
+            <summary>ORCHESTRA — платформа управления бизнес-процессами с ИИ</summary>
+            <div class="details-content">
+                <p><strong>Контекст:</strong> собственная разработка — «цифровой двойник бизнеса»: моделирование и исполнение процессов в виде графов, оркестрация людей и AI-агентов через Telegram.</p>
+                <ul>
+                    <li><strong>ИИ-исполнитель:</strong> задачи выполняет ИИ (интеграция LLM OpenAI/DeepSeek), результат генерируется под каждый выходной ресурс.</li>
+                    <li><strong>Оркестрация:</strong> разбивает проект на unit-задачи, управляет статусами, SLA и уведомлениями, координирует людей и AI-агентов через Telegram-бота.</li>
+                    <li><strong>Стек:</strong> React + Vite + TypeScript + React Flow (frontend), Go + PostgreSQL (backend), Telegram Bot API (telebot.v3), HTTP-клиент к OpenAI/DeepSeek.</li>
+                    <li><strong>Статус:</strong> активная разработка (MVP/прототип).</li>
+                </ul>
+            </div>
+        </details>
+
+        <details>
+            <summary>ИИ-продукты и инструменты (личные проекты)</summary>
+            <div class="details-content">
+                <ul>
+                    <li><strong>Telegram-бот «меню на неделю»:</strong> составляет меню по нормам веществ на указанное число человек, выдаёт список продуктов по секциям. MVP.</li>
+                    <li><strong>Бот для ведения блога</strong> и <strong>бот для ведения курсов</strong> (MVP).</li>
+                    <li><strong>Анализатор Telegram-чатов</strong> (в коллаборации).</li>
+                    <li><strong>Одностраничные ИИ-приложения</strong> для друзей и знакомых.</li>
+                </ul>
+            </div>
+        </details>
+
+        <details>
+            <summary>Авторские книги о системах и изменениях</summary>
+            <div class="details-content">
+                <ul>
+                    <li><strong>«Бизнес-терапия: как лечить компанию, не убивая владельца»</strong> — руководство для консультантов и собственников: диагностика, узкие места, вариабельность, человеческий фактор.</li>
+                    <li><strong>«Опора»</strong> — о работе с телом, опоре и сообществе.</li>
+                </ul>
+            </div>
+        </details>
+
+        <!-- ======================================== -->
+        <!-- ОПЫТ РАБОТЫ -->
+        <!-- ======================================== -->
+        <h2>Опыт работы</h2>
+
+        <details>
+            <summary>Руководитель отдела тестирования · ООО «ВБ ТЕХ»</summary>
+            <div class="details-content">
+                <p><strong>Контекст:</strong> В компании не было системного процесса тестирования — релизы хаотичны, команды не синхронизированы, баги на проде.</p>
+                <ul>
+                    <li><strong>Диагностика:</strong> Провела полный аудит разработки и тестирования для 3 продуктов. Нашла узкое место — передачу требований от аналитиков в разработку.</li>
+                    <li><strong>Процесс:</strong> Выстроила end-to-end процесс от анализа требований до ретроспективы. Внедрила единые правила сдачи задач (чек-лист, критерии готовности).</li>
+                    <li><strong>Команда:</strong> Когда я пришла, команда была на грани увольнения из-за внутренних конфликтов. Заменила неэффективного лида (он стал моим подчинённым), провела серию встреч и фасилитаций, выстроила доверие и общие цели. Команда превратилась в единый живой организм.</li>
+                    <li><strong>Результат:</strong> Критические баги на релизах сократились на 40%. Время от идеи до реализации — с 2 недель до 5 дней. Команда перестала бояться друг друга и начала говорить на одном языке.</li>
+                    <li><strong>Инструменты:</strong> YouTrack, Miro, Confluence, Telegram-боты для уведомлений.</li>
+                </ul>
+            </div>
+        </details>
+
+        <details>
+            <summary>QA Delivery · СберТех</summary>
+            <div class="details-content">
+                <p><strong>Контекст:</strong> Крупная компания, распределённые команды, сложная архитектура, множество стейкхолдеров.</p>
+                <ul>
+                    <li><strong>Процесс:</strong> Выстроила межкомандный end-to-end процесс тестирования флагманских фичей (синхронизация 5+ команд) — дефекты на стыках команд находились на уровне процесса, а не в проде.</li>
+                    <li><strong>Управление:</strong> Управляла распределёнными командами тестирования под конкретные проекты — обеспечила качество и сроки.</li>
+                    <li><strong>Отчётность:</strong> Внедрила понятную систему статус-отчётности для стейкхолдеров — прозрачность процесса вместо «тестируем и молчим».</li>
+                    <li><strong>Результат:</strong> Улучшила процессы тестирования — время регресса сократилось на 75%.</li>
+                </ul>
+            </div>
+        </details>
+
+        <details>
+            <summary>Руководитель отдела автоматизации (AQA) · ООО «Фортис»</summary>
+            <div class="details-content">
+                <p><strong>Контекст:</strong> Отдел из 7 инженеров автоматизации. Высокая нагрузка, legacy-тесты, долгие прогоны.</p>
+                <ul>
+                    <li><strong>Диагностика:</strong> Провела аудит процесса тестирования. Внедрила модель-ориентированный подход (SpecFlow) — поддержка тестов стала системной, а не ручной (время поддержки −60%).</li>
+                    <li><strong>Оптимизация процесса:</strong> Реорганизовала прогон автотестов: параллелизация, приоритизация, автоматизация запуска — обратная связь о качестве приходит за 1 час вместо 8.</li>
+                    <li><strong>Покрытие:</strong> Увеличила тестовое покрытие с 25% до 90%.</li>
+                    <li><strong>Сервисы:</strong> Запустила с нуля генератор тестовых данных и сервис мониторинга сред.</li>
+                    <li><strong>Архитектура:</strong> Участвовала в разработке архитектуры и алгоритмов проектов.</li>
+                </ul>
+            </div>
+        </details>
+
+        <details>
+            <summary>Ведущий тестировщик (Lead QA) · ООО «Фортис»</summary>
+            <div class="details-content">
+                <ul>
+                    <li><strong>Процесс найма:</strong> Провела собеседования и наняла тестировщиков в команду — собрала людей под выстроенный процесс, а не «тестировщиков-одиночек».</li>
+                    <li><strong>Онбординг:</strong> Составила ПВД (план введения в должность) — чтобы новый сотрудник с первого дня работал по единым правилам.</li>
+                    <li><strong>Распределение:</strong> Распределяла задачи между тестировщиками, контролировала качество процесса.</li>
+                    <li><strong>Тестирование:</strong> Проводила функциональное и регрессионное тестирование, анализ требований.</li>
+                    <li><strong>Отчётность:</strong> Готовила отчёты для руководства о ходе тестирования.</li>
+                    <li><strong>Взаимодействие:</strong> Ставила задачи на отделы автоматизации и нагрузочного тестирования.</li>
+                </ul>
+            </div>
+        </details>
+
+        <details>
+            <summary>Инженер по тестированию (QA) · ООО «Сателит Софт Лабс»</summary>
+            <div class="details-content">
+                <ul>
+                    <li><strong>Полный цикл:</strong> Приемочное, функциональное, регрессионное тестирование для нескольких проектов по Agile.</li>
+                    <li><strong>Требования:</strong> Анализ и тестирование требований на ранней стадии — ловила дефекты до написания кода, а не после.</li>
+                    <li><strong>Инструменты:</strong> Balsamiq Mockups для создания скетчей интерфейса.</li>
+                    <li><strong>Внедрения процессов:</strong> Внедрила Semantic Wiki для тестирования требований, методику KPI и Mind Map для визуализации процесса — сделала процесс тестирования прозрачным и повторяемым.</li>
+                    <li><strong>Найм и обучение:</strong> Проводила собеседования и обучение младшего персонала — передавала процесс, а не просто навыки.</li>
+                </ul>
+            </div>
+        </details>
+
+        <details>
+            <summary>Ведущий инженер по тестированию (QA) · Bell Integrator</summary>
+            <div class="details-content">
+                <ul>
+                    <li><strong>Ревью требований:</strong> Проводила ревью функциональных требований — дефекты устранялись на этапе требований, а не в коде.</li>
+                    <li><strong>Планирование:</strong> Составляла тест-планы, обеспечивающие полное покрытие требований.</li>
+                    <li><strong>Оценка:</strong> Оценивала трудозатраты на тестирование.</li>
+                    <li><strong>Автоматизация:</strong> Выделяла сценарии для автоматизированного тестирования — закладывала процесс, который не зависит от ручного повторения.</li>
+                    <li><strong>Анализ:</strong> Участвовала в разборе и классификации инцидентов — находила системные причины, а не просто «закрывала баги».</li>
+                </ul>
+            </div>
+        </details>
+
+        <!-- ======================================== -->
+        <!-- ДИПЛОМЫ И СЕРТИФИКАТЫ -->
+        <!-- ======================================== -->
+        <h2>Дипломы и сертификаты</h2>
+        <ul>
+            <li><strong>Высшее образование:</strong> Саратовский государственный университет им. Н.Г. Чернышевского, физический факультет — «Физика открытых нелинейных систем» (2012).</li>
+            <li><strong>Доп. образование — психолог:</strong> диплом о профессиональной переподготовке.</li>
+            <li><strong>Доп. образование — менеджмент:</strong> диплом о профессиональной переподготовке.</li>
+            <li><strong>Junior Java Developer:</strong> ИТМО, диплом о профессиональной переподготовке (2020).</li>
+            <li><strong>Автоматизация функционального тестирования:</strong> сертификат (2017).</li>
+            <li><strong>Управление конфликтами:</strong> сертификат, «Специалист.ru» (2020).</li>
+            <li><strong>Докладчик SQA DAYS 28:</strong> «Как перестать быть рабом кейсов и стать их повелителем».</li>
+        </ul>
+
+        <!-- ======================================== -->
+        <!-- КОНТАКТЫ -->
+        <!-- ======================================== -->
+        <h2>Контакты</h2>
+        <div class="contacts">
+            <a href="tel:+79093333491">+7 (909) 333 34 91</a>
+            <a href="mailto:demnatav@gmail.com">demnatav@gmail.com</a>
+            <a href="https://t.me/demnatav" target="_blank">@demnatav</a>
+        </div>
+
+        <!-- ======================================== -->
+        <!-- ФУТЕР -->
+        <!-- ======================================== -->
+        <div class="footer">
+            <span>Наталия Демина · внедрение ИИ и трансформация процессов</span>
+            <span>© 2025</span>
+        </div>
+
+    </div>
+
+    <script>
+        function printResume() {
+            const details = document.querySelectorAll('details');
+            const states = [];
+            details.forEach((d, i) => {
+                states[i] = d.open;
+                d.open = true;
+            });
+            document.body.classList.add('pdf-print-mode');
+            window.print();
+            details.forEach((d, i) => {
+                d.open = states[i];
+            });
+            document.body.classList.remove('pdf-print-mode');
+        }
+    </script>
+</body>
+</html>

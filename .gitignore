@@ -1,0 +1,20 @@
+# IDE
+.idea/
+
+# Veai (memory bank, private)
+.veai/
+
+# macOS
+.DS_Store
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+
+# Build / dist
+build/
+dist/
