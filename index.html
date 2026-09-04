@@ -523,25 +523,62 @@
             scroll-margin-top: 90px;
         }
 
+        /* ===== ТОЛЬКО ДЛЯ ПЕЧАТИ ===== */
+        .print-only {
+            display: none;
+        }
+
         /* ===== ПЕЧАТЬ / PDF ===== */
         @media print {
             .site-header,
             .pdf-button-wrapper,
             .carousel,
-            .qa-block {
+            .qa-title,
+            .qa-block,
+            .site-footer {
                 display: none;
             }
             body {
                 padding: 0.5in;
             }
+            .print-only {
+                display: block;
+            }
+            .print-contacts {
+                display: block;
+                margin-top: 0.75rem;
+                line-height: 1.7;
+            }
+            .print-contacts div {
+                font-size: 0.95rem;
+                color: #1a1a1a;
+            }
+            .print-contacts a {
+                font-size: 0.95rem;
+                border-bottom: none;
+                color: #1a1a1a;
+            }
+            .print-photo {
+                display: block;
+                width: 100%;
+                max-width: 360px;
+                border-radius: 12px;
+                object-fit: cover;
+            }
+            .hero-right {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            h2 {
+                break-after: avoid;
+            }
             details {
                 break-inside: avoid;
+                display: block !important;
             }
             .about-block {
-                break-inside: avoid;
-            }
-            details {
-                display: block !important;
+                break-inside: auto;
             }
             details summary::after {
                 display: none !important;
@@ -615,6 +652,11 @@
                     <div class="subhead">QA → Процессы → Внедрение ИИ</div>
                     <div class="total-experience">Общий опыт: 11 лет 2 месяца</div>
                     <div class="credo">Превращаю хаос в процесс, а процесс — в результат</div>
+                    <div class="print-contacts print-only">
+                        <div>Телефон: <a href="tel:+79093333491">+7 (909) 333 34 91</a></div>
+                        <div>Почта: <a href="mailto:demnatav@gmail.com">demnatav@gmail.com</a></div>
+                        <div>Телеграм: <a href="https://t.me/demnatav">@demnatav</a></div>
+                    </div>
                 </div>
 
                 <h2 class="qa-title">Задай вопрос обо мне</h2>
@@ -630,6 +672,7 @@
             </div>
 
             <div class="hero-right">
+                <img class="print-photo print-only" src="фото/JBS_4840.jpg" alt="Наталия Демина" />
                 <div class="carousel" id="carousel">
                     <div class="carousel-track" id="carousel-track">
                         <div class="carousel-slide"><img src="фото/28BRb7gnTAs.jpg" alt="Фото 1" /></div>
