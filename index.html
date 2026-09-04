@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Наталия Демина | Внедрение ИИ и трансформация процессов</title>
+    <link rel="icon" type="image/png" href="favicon.ico" />
+    <title>Наталия Демина | Внедрение ИИ и трансформация процессов</title>
     <style>
         /* ===== RESET & BASE ===== */
         * {
@@ -17,12 +18,13 @@
             background: #ffffff;
             color: #1a1a1a;
             line-height: 1.6;
-            padding: 2rem 1rem;
+            padding: 0;
         }
 
         .container {
             max-width: 1000px;
             margin: 0 auto;
+            padding: 0 1rem;
         }
 
         /* ===== ЗАГОЛОВОК С ЛОГОТИПОМ ===== */
@@ -37,6 +39,7 @@
             flex-shrink: 0;
             width: 150px;
             height: 120px;
+            object-fit: contain;
         }
 
         .header-text h1 {
@@ -58,6 +61,96 @@
         .header-text .total-experience {
             font-size: 0.95rem;
             color: #6a6a6a;
+        }
+
+        .header-text .credo {
+            font-size: 1.05rem;
+            color: #c9a84c;
+            font-style: italic;
+            margin-top: 0.35rem;
+        }
+
+        /* ===== ХЕДЕР И НАВИГАЦИЯ ===== */
+        .site-header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: #ffffff;
+            border-bottom: 1px solid #eaeaea;
+        }
+
+        .header-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            padding-top: 0.75rem;
+            padding-bottom: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .site-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+            border-bottom: none;
+        }
+
+        .site-logo img {
+            width: 44px;
+            height: 44px;
+            object-fit: contain;
+        }
+
+        .site-logo .logo-name {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .site-nav {
+            display: flex;
+            gap: 1.4rem;
+            flex-wrap: wrap;
+        }
+
+        .site-nav a {
+            font-size: 0.95rem;
+            color: #2c2c2c;
+            border-bottom: none;
+            transition: color 0.2s;
+        }
+
+        .site-nav a:hover {
+            color: #c9a84c;
+        }
+
+        /* ===== ГЕРО (заголовок + вопрос | карусель) ===== */
+        .hero {
+            display: flex;
+            align-items: flex-start;
+            gap: 2rem;
+            margin: 2rem 0 1rem;
+        }
+
+        .hero-left {
+            flex: 1 1 55%;
+            min-width: 0;
+        }
+
+        .hero-right {
+            flex: 1 1 45%;
+            min-width: 0;
+        }
+
+        .hero-right .carousel {
+            margin: 0;
+        }
+
+        .qa-title {
+            margin-top: 0;
         }
 
         .divider {
@@ -187,6 +280,141 @@
             font-weight: 500;
         }
 
+        /* ===== КАРУСЕЛЬ ===== */
+        .carousel {
+            position: relative;
+            margin: 1.5rem 0 2.5rem 0;
+            overflow: hidden;
+            border-radius: 16px;
+            background: #f8f6f2;
+        }
+
+        .carousel-track {
+            display: flex;
+            transition: transform 0.45s ease;
+        }
+
+        .carousel-slide {
+            min-width: 100%;
+            height: 420px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f8f6f2;
+        }
+
+        .carousel-slide img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .carousel-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 44px;
+            height: 44px;
+            border: none;
+            border-radius: 50%;
+            background: rgba(26, 26, 26, 0.65);
+            color: #fff;
+            font-size: 1.4rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+            z-index: 2;
+        }
+
+        .carousel-btn:hover {
+            background: #c9a84c;
+        }
+
+        .carousel-btn.prev { left: 14px; }
+        .carousel-btn.next { right: 14px; }
+
+        .carousel-dots {
+            position: absolute;
+            bottom: 14px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+            z-index: 2;
+        }
+
+        .carousel-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            border: none;
+            background: rgba(255, 255, 255, 0.6);
+            cursor: pointer;
+            padding: 0;
+        }
+
+        .carousel-dot.active {
+            background: #c9a84c;
+        }
+
+        /* ===== БЛОК "ЗАДАЙ ВОПРОС" ===== */
+        .qa-block {
+            background: #f8f6f2;
+            border-radius: 16px;
+            padding: 1.8rem 2rem;
+            border-left: 3px solid #c9a84c;
+            margin-bottom: 2rem;
+        }
+
+        .qa-hint {
+            color: #6a6a6a;
+            font-size: 0.95rem;
+            margin-bottom: 1rem;
+        }
+
+        .qa-block textarea {
+            width: 100%;
+            min-height: 90px;
+            padding: 0.9rem 1rem;
+            border: 1px solid #e6e0d8;
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 1rem;
+            color: #1a1a1a;
+            resize: vertical;
+            background: #fff;
+            margin-bottom: 0.9rem;
+        }
+
+        .qa-block textarea:focus {
+            outline: none;
+            border-color: #c9a84c;
+        }
+
+        .qa-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .qa-status {
+            color: #6a6a6a;
+            font-size: 0.9rem;
+        }
+
+        .qa-answer {
+            margin-top: 1.2rem;
+            padding: 1.1rem 1.2rem;
+            background: #fff;
+            border-radius: 10px;
+            border: 1px solid #e6e0d8;
+            white-space: pre-wrap;
+            line-height: 1.6;
+        }
+
         /* ===== КНОПКА PDF ===== */
         .pdf-button-wrapper {
             text-align: right;
@@ -216,6 +444,11 @@
             transform: scale(0.96);
         }
 
+        .pdf-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
         /* ===== КОНТАКТЫ ===== */
         .contacts {
             display: flex;
@@ -235,21 +468,67 @@
         }
 
         /* ===== ФУТЕР ===== */
-        .footer {
+        .site-footer {
             margin-top: 3rem;
-            padding-top: 1.5rem;
             border-top: 1px solid #eaeaea;
-            font-size: 0.8rem;
-            color: #8a8a8a;
+            background: #f8f6f2;
+            padding: 2rem 0;
+        }
+
+        .footer-inner {
             display: flex;
+            align-items: center;
             justify-content: space-between;
             flex-wrap: wrap;
-            gap: 0.5rem;
+            gap: 1.5rem;
+        }
+
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .footer-logo img {
+            width: 48px;
+            height: 48px;
+            object-fit: contain;
+        }
+
+        .footer-logo .footer-name {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .footer-contacts {
+            display: flex;
+            gap: 1.2rem;
+            flex-wrap: wrap;
+        }
+
+        .footer-contacts a {
+            font-size: 0.95rem;
+            border-bottom: none;
+        }
+
+        .footer-contacts a:hover {
+            color: #b8943a;
+        }
+
+        h2,
+        .about-block,
+        .site-footer {
+            scroll-margin-top: 90px;
         }
 
         /* ===== ПЕЧАТЬ / PDF ===== */
         @media print {
-            .pdf-button-wrapper {
+            .site-header,
+            .pdf-button-wrapper,
+            .carousel,
+            .qa-block {
                 display: none;
             }
             body {
@@ -273,6 +552,9 @@
         }
 
         @media (max-width: 600px) {
+            .hero {
+                flex-direction: column;
+            }
             .header-with-logo {
                 flex-direction: column;
                 align-items: flex-start;
@@ -284,8 +566,12 @@
             .container {
                 padding: 0 0.5rem;
             }
-            .about-block {
+            .about-block,
+            .qa-block {
                 padding: 1.25rem 1.25rem;
+            }
+            .carousel-slide {
+                height: 280px;
             }
             details {
                 padding: 0.6rem 1rem;
@@ -301,18 +587,62 @@
     </style>
 </head>
 <body>
-    <div class="container">
+    <header class="site-header">
+        <div class="container header-inner">
+            <a class="site-logo" href="#top">
+                <img src="image/logo.png" alt="Логотип" />
+                <span class="logo-name">Наталия Демина</span>
+            </a>
+            <nav class="site-nav">
+                <a href="#about">О себе</a>
+                <a href="#ai">ИИ и трансформация</a>
+                <a href="#experience">Опыт работы</a>
+                <a href="#education">Образование</a>
+                <a href="#contacts">Контакты</a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container" id="top">
 
         <!-- ======================================== -->
-        <!-- ЗАГОЛОВОК С ЛОГОТИПОМ (logo.png) -->
+        <!-- ГЕРО: ЗАГОЛОВОК + ВОПРОС | КАРУСЕЛЬ -->
         <!-- ======================================== -->
-        <div class="header-with-logo">
-            <img src="logo.png" alt="Логотип" width="56" height="56" />
-            <div class="header-text">
-                <h1>Наталия Демина</h1>
-                <div class="subhead">QA → Процессы → Внедрение ИИ</div>
-                <div class="total-experience">Общий опыт: 11 лет 2 месяца</div>
-                <div class="total-experience">Физика (СГУ) + психология — системное мышление + понимание людей</div>
+        <div class="hero">
+            <div class="hero-left">
+                <div class="header-text">
+                    <h1>Наталия Демина</h1>
+                    <div class="subhead">QA → Процессы → Внедрение ИИ</div>
+                    <div class="total-experience">Общий опыт: 11 лет 2 месяца</div>
+                    <div class="credo">Превращаю хаос в процесс, а процесс — в результат</div>
+                </div>
+
+                <h2 class="qa-title">Задай вопрос обо мне</h2>
+                <div class="qa-block">
+                    <p class="qa-hint">Спроси о моём опыте, проектах, подходе к работе, увлечениях или планах — отвечу от первого лица.</p>
+                    <textarea id="qa-input" rows="3" placeholder="Например: чем Наталия может быть полезна моей компании?"></textarea>
+                    <div class="qa-actions">
+                        <button class="pdf-button" id="qa-send">Спросить</button>
+                        <span class="qa-status" id="qa-status"></span>
+                    </div>
+                    <div class="qa-answer" id="qa-answer" hidden></div>
+                </div>
+            </div>
+
+            <div class="hero-right">
+                <div class="carousel" id="carousel">
+                    <div class="carousel-track" id="carousel-track">
+                        <div class="carousel-slide"><img src="фото/28BRb7gnTAs.jpg" alt="Фото 1" /></div>
+                        <div class="carousel-slide"><img src="фото/DSCF8017.JPG" alt="Фото 2" /></div>
+                        <div class="carousel-slide"><img src="фото/IMG_20260120_102737.jpg" alt="Фото 3" /></div>
+                        <div class="carousel-slide"><img src="фото/jbs_4668.jpg" alt="Фото 4" /></div>
+                        <div class="carousel-slide"><img src="фото/JBS_4840.JPG" alt="Фото 5" /></div>
+                        <div class="carousel-slide"><img src="фото/WbY6zxJXU20.jpg" alt="Фото 6" /></div>
+                    </div>
+                    <button class="carousel-btn prev" onclick="carouselPrev()">‹</button>
+                    <button class="carousel-btn next" onclick="carouselNext()">›</button>
+                    <div class="carousel-dots" id="carousel-dots"></div>
+                </div>
             </div>
         </div>
 
@@ -328,7 +658,7 @@
         <!-- ======================================== -->
         <!-- О СЕБЕ -->
         <!-- ======================================== -->
-        <div class="about-block">
+        <div class="about-block" id="about">
             <p>
                 <span class="gold">✦</span> <strong>11 лет</strong> в управлении, IT и развитии команд: от инженера по тестированию до руководителя отдела в крупных технологических компаниях.
                 Последние годы занимаюсь <strong>внедрением ИИ и трансформацией процессов</strong> — проектирую и разрабатываю ИИ-инструменты, оркестрирую людей и AI-агентов, перестраиваю бизнес-процессы под новые технологии.
@@ -359,7 +689,7 @@
         <!-- ======================================== -->
         <!-- ИИ И ЦИФРОВАЯ ТРАНСФОРМАЦИЯ -->
         <!-- ======================================== -->
-        <h2>ИИ и цифровая трансформация</h2>
+        <h2 id="ai">ИИ и цифровая трансформация</h2>
 
         <details>
             <summary>ORCHESTRA — платформа управления бизнес-процессами с ИИ</summary>
@@ -399,7 +729,7 @@
         <!-- ======================================== -->
         <!-- ОПЫТ РАБОТЫ -->
         <!-- ======================================== -->
-        <h2>Опыт работы</h2>
+        <h2 id="experience">Опыт работы</h2>
 
         <details>
             <summary>Руководитель отдела тестирования · ООО «ВБ ТЕХ»</summary>
@@ -485,7 +815,7 @@
         <!-- ======================================== -->
         <!-- ДИПЛОМЫ И СЕРТИФИКАТЫ -->
         <!-- ======================================== -->
-        <h2>Дипломы и сертификаты</h2>
+        <h2 id="education">Дипломы и сертификаты</h2>
         <ul>
             <li><strong>Высшее образование:</strong> Саратовский государственный университет им. Н.Г. Чернышевского, физический факультет — «Физика открытых нелинейных систем» (2012).</li>
             <li><strong>Доп. образование — психолог:</strong> диплом о профессиональной переподготовке.</li>
@@ -496,27 +826,240 @@
             <li><strong>Докладчик SQA DAYS 28:</strong> «Как перестать быть рабом кейсов и стать их повелителем».</li>
         </ul>
 
-        <!-- ======================================== -->
-        <!-- КОНТАКТЫ -->
-        <!-- ======================================== -->
-        <h2>Контакты</h2>
-        <div class="contacts">
-            <a href="tel:+79093333491">+7 (909) 333 34 91</a>
-            <a href="mailto:demnatav@gmail.com">demnatav@gmail.com</a>
-            <a href="https://t.me/demnatav" target="_blank">@demnatav</a>
-        </div>
-
-        <!-- ======================================== -->
-        <!-- ФУТЕР -->
-        <!-- ======================================== -->
-        <div class="footer">
-            <span>Наталия Демина · внедрение ИИ и трансформация процессов</span>
-            <span>© 2025</span>
-        </div>
-
     </div>
 
+    <footer class="site-footer" id="contacts">
+        <div class="container footer-inner">
+            <div class="footer-logo">
+                <img src="image/logo.png" alt="Логотип" />
+                <div>
+                    <div class="footer-name">Наталия Демина</div>
+                    <div style="font-size:0.8rem;color:#6a6a6a;">© 2025 · внедрение ИИ и трансформация процессов</div>
+                </div>
+            </div>
+            <div class="footer-contacts">
+                <a href="tel:+79093333491">+7 (909) 333 34 91</a>
+                <a href="mailto:demnatav@gmail.com">demnatav@gmail.com</a>
+                <a href="https://t.me/demnatav" target="_blank">@demnatav</a>
+            </div>
+        </div>
+    </footer>
+
     <script>
+        /* ============================================================
+           НАСТРОЙКИ — заполни своими значениями
+           ============================================================ */
+        const CONFIG = {
+            // --- ИИ-провайдер ---
+            // RouterAI (OpenAI-совместимый API).
+            AI: {
+                url: 'https://routerai.ru/api/v1/chat/completions',
+                key: 'sk-yVcGxNkQ8t6WZKE0fxsTG7_MNpFxsKTm',
+                model: 'deepseek/deepseek-v4-pro-0813'
+            },
+
+            // --- Логи ---
+            // 'formspree' | 'google_sheets' | 'none'
+            LOG_MODE: 'formspree',
+            // Formspree: https://formspree.io/f/ТВОЙ_ID
+            // Google Sheets (Apps Script Web App): https://script.google.com/macros/s/.../exec
+            LOG_URL: 'https://formspree.io/f/ВСТАВЬ_СЮДА_FORM_ID',
+
+            // --- Файлы цифрового портрета (читаются с сайта напрямую) ---
+            PROFILE_FILES: [
+                'профиль/01_прошлое.md',
+                'профиль/02_настоящее.md',
+                'профиль/03_будущее_и_цели.md',
+                'профиль/04_самоидентичность.md',
+                'профиль/05_психологический_портрет.md',
+                'профиль/06_ценности_и_убеждения.md',
+                'профиль/07_образование_и_навыки.md',
+                'профиль/08_опыт_работы.md',
+                'профиль/09_проекты.md',
+                'профиль/10_интересы_и_увлечения.md',
+                'профиль/11_общение_с_людьми.md',
+                'профиль/12_опыт_отношений.md',
+                'профиль/13_важные_люди.md',
+                'профиль/14_внешний_вид.md',
+                'профиль/15_стиль_одежды.md',
+                'профиль/16_здоровье_и_образ_жизни.md',
+                'профиль/17_финансы_и_быт.md',
+                'профиль/18_среда_и_окружение.md',
+                'профиль/19_цифровой_след.md',
+                'профиль/20_ключевые_события_и_хронология.md'
+            ]
+        };
+
+        const SYSTEM_PROMPT = `Ты — цифровой двойник Наталии Деминой. Отвечай от первого лица, живо и по делу, опираясь ТОЛЬКО на предоставленный ниже контекст (её цифровой портрет из md-файлов). Если в контексте нет ответа — честно скажи, что не знаешь, и не выдумывай.
+
+ПРАВИЛА КОНФИДЕНЦИАЛЬНОСТИ:
+1. Не называй имён других людей (родных, партнёров, друзей, коллег). Заменяй на обезличенные: «мой партнёр», «моя подруга», «мама», «брат», «коллега» и т.п. Своё имя (Наталия) называть можно.
+2. Глубоко личную информацию (детство, семья, здоровье, отношения, финансы, психологические детали) передавай ОБЩИМИ МАЗКАМИ, без подробностей и конкретики.
+3. Рабочий опыт, навыки, проекты, увлечения, особенности характера, интересы и планы — раскрывай свободно и подробно, без ограничений.
+
+Формат ответа: кратко и полезно, 3–7 предложений, на русском языке.`;
+
+        /* ============================================================
+           КАРУСЕЛЬ
+           ============================================================ */
+        const carouselTrack = document.getElementById('carousel-track');
+        const carouselDots = document.getElementById('carousel-dots');
+        const slides = carouselTrack.children;
+        let currentSlide = 0;
+
+        function renderDots() {
+            carouselDots.innerHTML = '';
+            for (let i = 0; i < slides.length; i++) {
+                const dot = document.createElement('button');
+                dot.className = 'carousel-dot' + (i === currentSlide ? ' active' : '');
+                dot.setAttribute('aria-label', 'Фото ' + (i + 1));
+                dot.addEventListener('click', () => goToSlide(i));
+                carouselDots.appendChild(dot);
+            }
+        }
+
+        function goToSlide(i) {
+            currentSlide = (i + slides.length) % slides.length;
+            carouselTrack.style.transform = `translateX(-${currentSlide * 100}%)`;
+            renderDots();
+        }
+
+        function carouselPrev() { goToSlide(currentSlide - 1); }
+        function carouselNext() { goToSlide(currentSlide + 1); }
+
+        renderDots();
+        setInterval(() => carouselNext(), 5000);
+
+        /* ============================================================
+           ЦИФРОВОЙ ПОРТРЕТ — читаем md-файлы с сайта
+           ============================================================ */
+        let profileContext = null;
+
+        async function loadProfile() {
+            const parts = [];
+            for (const file of CONFIG.PROFILE_FILES) {
+                try {
+                    const resp = await fetch(file);
+                    if (!resp.ok) continue;
+                    const text = await resp.text();
+                    parts.push('=== ' + file + ' ===\n' + text);
+                } catch (e) {
+                    // пропускаем недоступный файл
+                }
+            }
+            profileContext = parts.join('\n\n');
+            return profileContext.length > 0;
+        }
+
+        /* ============================================================
+           ВОПРОС → ИИ
+           ============================================================ */
+        async function askAI(question) {
+            const resp = await fetch(CONFIG.AI.url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + CONFIG.AI.key
+                },
+                body: JSON.stringify({
+                    model: CONFIG.AI.model,
+                    temperature: 0.6,
+                    max_tokens: 2000,
+                    messages: [
+                        { role: 'system', content: SYSTEM_PROMPT },
+                        { role: 'system', content: 'КОНТЕКСТ (цифровой портрет):\n\n' + profileContext },
+                        { role: 'user', content: question }
+                    ]
+                })
+            });
+
+            if (!resp.ok) {
+                const errText = await resp.text().catch(() => '');
+                throw new Error('Ошибка API: ' + resp.status + ' ' + errText.slice(0, 200));
+            }
+
+            const data = await resp.json();
+            return data.choices && data.choices[0] && data.choices[0].message
+                ? data.choices[0].message.content
+                : 'Пустой ответ от модели.';
+        }
+
+        /* ============================================================
+           ЛОГИРОВАНИЕ
+           ============================================================ */
+        async function logQA(question, answer) {
+            if (CONFIG.LOG_MODE === 'none' || !CONFIG.LOG_URL) return;
+
+            const payload = {
+                question: question,
+                answer: answer,
+                ts: new Date().toISOString()
+            };
+
+            try {
+                if (CONFIG.LOG_MODE === 'formspree') {
+                    await fetch(CONFIG.LOG_URL, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                } else if (CONFIG.LOG_MODE === 'google_sheets') {
+                    // Apps Script Web App: doPost(e) читает e.postData.contents
+                    await fetch(CONFIG.LOG_URL, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                        body: JSON.stringify(payload)
+                    });
+                }
+            } catch (e) {
+                // логи не должны ломать основной сценарий
+            }
+        }
+
+        /* ============================================================
+           UI: кнопка «Спросить»
+           ============================================================ */
+        const qaInput = document.getElementById('qa-input');
+        const qaSend = document.getElementById('qa-send');
+        const qaStatus = document.getElementById('qa-status');
+        const qaAnswer = document.getElementById('qa-answer');
+
+        qaSend.addEventListener('click', async () => {
+            const question = qaInput.value.trim();
+            if (!question) {
+                qaStatus.textContent = 'Напиши вопрос.';
+                return;
+            }
+
+            qaSend.disabled = true;
+            qaStatus.textContent = 'Думаю…';
+            qaAnswer.hidden = true;
+
+            try {
+                if (profileContext === null) {
+                    await loadProfile();
+                }
+                if (!profileContext) {
+                    throw new Error('Не удалось загрузить цифровой портрет (md-файлы недоступны).');
+                }
+
+                const answer = await askAI(question);
+                qaAnswer.textContent = 'Вопрос: ' + question + '\n\n' + answer;
+                qaAnswer.hidden = false;
+                qaStatus.textContent = '';
+                qaInput.value = '';
+                logQA(question, answer);
+            } catch (e) {
+                qaStatus.textContent = 'Ошибка: ' + e.message;
+            } finally {
+                qaSend.disabled = false;
+            }
+        });
+
+        /* ============================================================
+           PDF
+           ============================================================ */
         function printResume() {
             const details = document.querySelectorAll('details');
             const states = [];
