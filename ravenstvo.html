@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Язык равенства</title>
+<style>
+    :root {
+        --gold: #c9a84c;
+        --gold-dark: #b8943a;
+        --ink: #1a1a1a;
+        --soft: #f8f6f2;
+        --line: #e6e0d8;
+        --muted: #6a6a6a;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        color: var(--ink);
+        background: #ffffff;
+        line-height: 1.75;
+        font-size: 17px;
+    }
+
+    .wrap { max-width: 820px; margin: 0 auto; padding: 0 1.5rem; }
+
+    /* header */
+    header {
+        background: var(--soft);
+        border-bottom: 3px solid var(--gold);
+        padding: 4rem 0 3rem;
+        margin-bottom: 3rem;
+    }
+    header .kicker {
+        text-transform: uppercase;
+        letter-spacing: 0.22em;
+        font-size: 0.78rem;
+        color: var(--gold-dark);
+        font-weight: 600;
+        margin-bottom: 1rem;
+    }
+    header h1 {
+        font-family: 'Playfair Display', Georgia, serif;
+        font-size: 3.4rem;
+        font-weight: 600;
+        line-height: 1.1;
+        margin-bottom: 1rem;
+    }
+    header .subtitle {
+        font-size: 1.2rem;
+        color: var(--muted);
+        max-width: 620px;
+        font-style: italic;
+    }
+
+    /* sections */
+    section { margin-bottom: 3.5rem; }
+    h2 {
+        font-family: 'Playfair Display', Georgia, serif;
+        font-size: 1.9rem;
+        font-weight: 600;
+        margin-bottom: 1.1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid var(--line);
+    }
+    h2 .num {
+        color: var(--gold-dark);
+        font-size: 1.4rem;
+        margin-right: 0.5rem;
+    }
+    h3 {
+        font-size: 1.12rem;
+        font-weight: 600;
+        margin: 1.5rem 0 0.5rem;
+    }
+    p { margin-bottom: 1rem; }
+    .lead { font-size: 1.12rem; color: #2c2c2c; }
+
+    /* callout / insight block */
+    .insight {
+        background: var(--soft);
+        border-left: 4px solid var(--gold);
+        border-radius: 0 10px 10px 0;
+        padding: 1.4rem 1.6rem;
+        margin: 1.5rem 0;
+    }
+    .insight p:last-child { margin-bottom: 0; }
+    .insight .label {
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+        font-size: 0.72rem;
+        color: var(--gold-dark);
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+
+    /* dictionary */
+    .term {
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 1.2rem 1.4rem;
+        margin-bottom: 1rem;
+    }
+    .term .word {
+        font-family: 'Playfair Display', Georgia, serif;
+        font-size: 1.35rem;
+        font-weight: 600;
+        color: var(--ink);
+    }
+    .term .word .tag {
+        font-family: 'Inter', sans-serif;
+        font-size: 0.7rem;
+        font-weight: 600;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--gold-dark);
+        border: 1px solid var(--gold);
+        border-radius: 20px;
+        padding: 0.15rem 0.6rem;
+        margin-left: 0.5rem;
+        vertical-align: middle;
+    }
+    .term .def { margin-top: 0.4rem; color: #2c2c2c; }
+
+    /* table */
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 1.2rem 0;
+        font-size: 0.95rem;
+    }
+    th, td {
+        text-align: left;
+        padding: 0.7rem 0.8rem;
+        border-bottom: 1px solid var(--line);
+        vertical-align: top;
+    }
+    th {
+        font-weight: 600;
+        color: var(--gold-dark);
+        border-bottom: 2px solid var(--gold);
+        font-size: 0.82rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+    tr:last-child td { border-bottom: none; }
+
+    /* list */
+    ul { margin: 0.5rem 0 1rem 1.2rem; }
+    li { margin-bottom: 0.4rem; }
+    li::marker { color: var(--gold); }
+
+    /* footer */
+    footer {
+        margin-top: 4rem;
+        padding: 2rem 0 3rem;
+        border-top: 1px solid var(--line);
+        color: var(--muted);
+        font-size: 0.85rem;
+        text-align: center;
+    }
+
+    @media (max-width: 600px) {
+        header h1 { font-size: 2.4rem; }
+        body { font-size: 16px; }
+    }
+</style>
+</head>
+<body>
+
+<header>
+    <div class="wrap">
+        <div class="kicker">Методология · Словарь · Манифест</div>
+        <h1>Язык равенства</h1>
+        <div class="subtitle">Слова, которых не хватает, чтобы быть рядом с другим — на равных, без осуждения и без выгоды.</div>
+    </div>
+</header>
+
+<div class="wrap">
+
+    <section>
+        <h2><span class="num">1.</span>Зачем это</h2>
+        <p class="lead">В языке есть сотни слов для того, кто выше или ниже: начальник и подчинённый, господин и слуга, наставник и ученик, победитель и проигравший. И почти нет слов для того, кто <strong>равен</strong> — кто знает тебя, слушает и поддерживает без собственной выгоды, без осуждения.</p>
+        <p>Отсутствие слова — не случайность. Если у чего-то нет имени, это что-то трудно назвать, передать другому и отстоять. Язык не просто описывает отношения — он их формирует. Гипотеза проста: <strong>конфликтность и иерархичность заложены в самой структуре языка</strong>, и, изменив структуру языка — добавив недостающие слова и принципы, — можно изменить и сами отношения.</p>
+        <div class="insight">
+            <div class="label">Исходная задача</div>
+            <p>Найти слово для «равного человека, который знает, слушает и поддерживает без выгоды и осуждения». Поиск показал: такого целостного слова в современных языках нет. Есть «друг», «супруг», «наперстник», «психолог» (но ему платят) — и всё это либо про статус, либо про деньги, либо неполно.</p>
+        </div>
+    </section>
+
+    <section>
+        <h2><span class="num">2.</span>Ключевой инсайт</h2>
+        <p>Если люди — главный источник неопределённости (то, что мы постоянно пытаемся предсказать и на что повлиять), то почему для взаимодействия «на равных» нет целостной терминологии?</p>
+        <p>Ответ даёт <strong>принцип свободной энергии</strong> (Free Energy Principle, Карл Фристон): любая живая система стремится минимизировать «сюрприз» — расхождение между тем, что она предсказывает, и тем, что происходит.</p>
+        <p>Минимизировать неопределённость о другом человеке можно двумя способами:</p>
+        <ul>
+            <li><strong>Тонким</strong> — построить точную модель другого (дорого, медленно, требует эмпатии и внимания).</li>
+            <li><strong>Дешёвым</strong> — упростить другого до предсказуемой категории: «начальник», «подчинённый», «свой», «чужой», стереотип.</li>
+        </ul>
+        <p>Эволюция почти всегда выбирает дешёвый способ. И вот ключевая мысль:</p>
+        <div class="insight">
+            <div class="label">Иерархия — машина удешевления предсказания</div>
+            <p>Если человек «выше» — он предсказуем (приказывает, наказывает). Если «ниже» — тоже предсказуем (подчиняется, боится). Иерархия делает поведение другого дешёвым для прогноза. Поэтому язык <strong>переполнен</strong> словами про статус и <strong>пуст</strong> на слова про равное: равное — это случай, когда два человека одинаково непредсказуемы друг для друга, и эту неопределённость ничем не упростить. Это самый дорогой случай — и именно на нём эволюция и власть «сэкономили».</p>
+        </div>
+        <p>Отсюда главный вывод:</p>
+        <div class="insight">
+            <div class="label">Структура языка — карта экономии</div>
+            <p><strong>Структура языка — это карта того, как культура экономит на предсказании другого. Там, где слов нет, — культура не захотела платить цену понимания.</strong> Язык оптимизирован под дешёвое предсказание (категории, статусы, команды), а не под тонкое понимание (состояния, сонастройка, равное присутствие).</p>
+        </div>
+    </section>
+
+    <section>
+        <h2><span class="num">3.</span>Словарь</h2>
+        <p>Мы вводим слова для того, чего язык не назвал. Часть — авторские термины, часть — рабочие названия для существующих, но разрозненных понятий.</p>
+
+        <div class="term">
+            <div class="word">Аура <span class="tag">авторский</span></div>
+            <div class="def">Сиюминутное состояние человека — те мысли и чувства, в которых он находится прямо сейчас. Эмоциональный фон, который легко считывается, но который редко имеют слова, чтобы назвать взаимодействие с ним.</div>
+        </div>
+
+        <div class="term">
+            <div class="word">Гостевание в чужой ауре</div>
+            <div class="def">Отказаться от собственного состояния и перенять настроение и мысли другого человека. Может быть сознательным (эмпатия) или невольным (заражение).</div>
+        </div>
+
+        <div class="term">
+            <div class="word">Токсичный человек</div>
+            <div class="def">Тот, чья аура быстро переключает твои мысли с хорошего на плохое — «портит» твоё состояние. Точное операциональное определение вместо расплывчатого ярлыка.</div>
+        </div>
+
+        <div class="term">
+            <div class="word">Душевидец <span class="tag">авторский</span></div>
+            <div class="def">Рабочее имя для «равного, который знает, слушает и поддерживает без выгоды и осуждения». Тот самый недостающий термин — кандидат на то, чтобы закрыть лексическую лакуну.</div>
+        </div>
+
+        <div class="term">
+            <div class="word">Зазор</div>
+            <div class="def">Расхождение между тем, как человек видит себя (автопортрет), и тем, как он проявляется в действии (след). Именно в зазоре живут слепые зоны, комплексы и подлинность.</div>
+        </div>
+
+        <div class="term">
+            <div class="word">Эвиденциальность</div>
+            <div class="def">Грамматическое указание источника информации («сам видел», «мне сказали», «я вывел»). Языки с обязательной эвиденциальностью оставляют меньше места для лжи за расплывчатыми формулировками.</div>
+        </div>
+    </section>
+
+    <section>
+        <h2><span class="num">4.</span>Рассыпанные куски</h2>
+        <p>Целостной структуры нет, но отдельные термины существуют — они просто разбросаны по дисциплинам, и никто не собрал их в единую рамку. Это наша задача.</p>
+        <table>
+            <thead>
+                <tr><th>Наш язык</th><th>Научный термин</th><th>Где живёт</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>Аура</td><td>Аффективное состояние</td><td>нейронаука, психология эмоций</td></tr>
+                <tr><td>Заразить аурой</td><td>Emotional contagion (эмоциональное заражение)</td><td>психология, нейронаука</td></tr>
+                <tr><td>Подстройка под ауру</td><td>Attunement, coregulation (сонастройка)</td><td>психология развития, терапия</td></tr>
+                <tr><td>Быть рядом на равных</td><td>Unconditional positive regard (безусловное принятие)</td><td>Карл Роджерс</td></tr>
+                <tr><td>Обсуждать на равных</td><td>Rapport, alignment, common ground</td><td>лингвистика, коммуникация</td></tr>
+                <tr><td>Личность как граф</td><td>Генеративная модель + reward + policy</td><td>вычислительная нейронаука</td></tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section>
+        <h2><span class="num">5.</span>Методы и инструменты</h2>
+        <p>Цель — не только назвать, но и дать практические инструменты, которых не хватает. Первые, выведенные из работы над концепцией:</p>
+
+        <h3>Отделять факт от намерения</h3>
+        <p>Когда чужая реакция задевает — разделять: <em>факт</em> («он ответил сарказмом») и <em>догадку</em> («он специально хотел меня ранить»). Догадка о намерении почти всегда достраивается нами и может быть неверна. Работать с фактом, а не с призраком намерения.</p>
+
+        <h3>Называть действие, а не намерение</h3>
+        <p>Вместо «ты меня упрекаешь» (оспаривается: «а где упрёк?») — «ты ответил насмешкой на то, что мне дорого» (факт, его не оспорить). Точное слово лишает собеседника лазейки и оставляет только честный выбор.</p>
+
+        <h3>Переключатель «задача / человек»</h3>
+        <p>Перед трудной правдой — один вопрос: сейчас передо мной задача (чинить систему) или человек в чувстве (сохранить связь)? Прямота — инструмент; её форма должна подбираться под ситуацию, а суть оставаться честной.</p>
+
+        <h3>Различать два способа снизить неопределённость</h3>
+        <p>Спросить себя: я сейчас строю точную модель другого (дорого, эмпатично) или упрощаю его до категории (дёшево, иерархично)? Осознанный выбор вместо автоматизма.</p>
+    </section>
+
+    <section>
+        <h2><span class="num">6.</span>Литература и источники</h2>
+        <ul>
+            <li><strong>Karl Friston</strong> — Active Inference, Free Energy Principle (единый принцип работы мозга и поведения).</li>
+            <li><strong>Andy Clark</strong> — «Surfing Uncertainty» (мозг как машина предсказаний).</li>
+            <li><strong>Alex Pentland</strong> — «Social Physics» (измерение взаимодействий людей как потоков информации).</li>
+            <li><strong>Richard Sutton, Andrew Barto</strong> — «Reinforcement Learning: An Introduction» (математика принятия решений).</li>
+            <li><strong>Judea Pearl</strong> — «The Book of Why» (причинность и графы).</li>
+            <li><strong>Carl Rogers</strong> — безусловное позитивное принятие.</li>
+            <li><strong>Гипотеза Сепира—Уорфа</strong> — лингвистическая относительность: язык формирует мышление и восприятие.</li>
+            <li><strong>Эвиденциальность</strong> — грамматическая категория источника информации (турецкий, болгарский и др.).</li>
+            <li><strong>Хеврута</strong> — еврейская традиция парного изучения текста через спор («попробуй опровергни»).</li>
+        </ul>
+    </section>
+
+    <section>
+        <h2><span class="num">7.</span>Куда это может вырасти</h2>
+        <p>Пока это открытый вопрос. Возможные формы: <strong>книга</strong>, <strong>методичка</strong>, <strong>методология</strong> — то, что объяснит людям, как общаться на равных, и даст инструменты и методы, которых сейчас не хватает. Форма прояснится по мере наполнения.</p>
+        <div class="insight">
+            <div class="label">Текущее состояние</div>
+            <p>Это живой документ. Он дополняется инсайтами, словарём и методами по мере работы. Источник правды — в этом файле и связанных заметках.</p>
+        </div>
+    </section>
+
+</div>
+
+<footer>
+    <div class="wrap">Язык равенства · рабочий документ · дополняется по мере работы</div>
+</footer>
+
+</body>
+</html>
