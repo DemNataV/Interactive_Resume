@@ -46,28 +46,37 @@
             font-family: 'Playfair Display', Georgia, serif;
             font-size: 2.8rem;
             font-weight: 600;
-            line-height: 1.2;
+            line-height: 1.15;
             color: #1a1a1a;
-            margin-bottom: 0.1rem;
+            margin-bottom: 0.35rem;
         }
 
         .header-text .subhead {
-            font-size: 1.2rem;
+            font-size: 1.15rem;
             color: #c9a84c;
-            font-weight: 400;
-            margin-bottom: 0.1rem;
-        }
-
-        .header-text .total-experience {
-            font-size: 0.95rem;
-            color: #6a6a6a;
+            font-weight: 600;
+            letter-spacing: 0.04em;
+            margin-bottom: 0.55rem;
         }
 
         .header-text .credo {
             font-size: 1.05rem;
-            color: #c9a84c;
+            color: #4a4a4a;
             font-style: italic;
-            margin-top: 0.35rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .header-text .edu-line {
+            font-size: 0.98rem;
+            color: #4a4a4a;
+            margin-bottom: 0.6rem;
+        }
+
+        .header-text .total-experience {
+            font-size: 0.82rem;
+            color: #9a9a9a;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
         }
 
         /* ===== ХЕДЕР И НАВИГАЦИЯ ===== */
@@ -544,9 +553,21 @@
             .print-only {
                 display: block;
             }
+            .header-text h1 {
+                font-size: 1.9rem;
+            }
+            .header-text .subhead {
+                font-size: 1rem;
+            }
+            .header-text .credo,
+            .header-text .edu-line {
+                font-size: 0.95rem;
+            }
             .print-contacts {
                 display: block;
-                margin-top: 0.75rem;
+                margin-top: 1rem;
+                padding-top: 0.75rem;
+                border-top: 1px solid #e6e0d8;
                 line-height: 1.7;
             }
             .print-contacts div {
@@ -557,6 +578,22 @@
                 font-size: 0.95rem;
                 border-bottom: none;
                 color: #1a1a1a;
+            }
+            .print-interactive {
+                margin-top: 0.6rem;
+                padding-top: 0.6rem;
+                border-top: 1px solid #f0ece4;
+            }
+            .print-interactive a {
+                font-size: 0.9rem;
+                color: #4a4a4a;
+            }
+            .print-url {
+                display: block;
+                margin-top: 0.2rem;
+                font-size: 0.85rem;
+                color: #6a6a6a;
+                word-break: break-all;
             }
             .print-photo {
                 display: block;
@@ -574,8 +611,11 @@
                 break-after: avoid;
             }
             details {
-                break-inside: avoid;
+                break-inside: auto;
                 display: block !important;
+            }
+            summary {
+                break-after: avoid;
             }
             .about-block {
                 break-inside: auto;
@@ -650,12 +690,17 @@
                 <div class="header-text">
                     <h1>Наталия Демина</h1>
                     <div class="subhead">QA → Процессы → Внедрение ИИ</div>
-                    <div class="total-experience">Общий опыт: 11 лет 2 месяца</div>
                     <div class="credo">Превращаю хаос в процесс, а процесс — в результат</div>
+                    <div class="edu-line">Физик + психолог: вижу и систему, и человека, который будет с ней работать</div>
+                    <div class="total-experience">Общий опыт: 11 лет 2 месяца</div>
                     <div class="print-contacts print-only">
                         <div>Телефон: <a href="tel:+79093333491">+7 (909) 333 34 91</a></div>
                         <div>Почта: <a href="mailto:demnatav@gmail.com">demnatav@gmail.com</a></div>
                         <div>Телеграм: <a href="https://t.me/demnatav">@demnatav</a></div>
+                        <div class="print-interactive">
+                            <a href="https://demnatav.github.io/Interactive_Resume/">✦ Интерактивное резюме — тоже моя разработка: задайте моему цифровому двойнику любой вопрос обо мне — он ответит честно</a>
+                            <span class="print-url">https://demnatav.github.io/Interactive_Resume/</span>
+                        </div>
                     </div>
                 </div>
 
@@ -727,6 +772,9 @@
                 с языка эмоций на язык решений.
                 И я умею <strong>внедрять</strong> — не оставлять клиента с отчётом, а доводить изменения до привычки.
             </p>
+            <p>
+                <span class="gold">✦</span> <strong>Про человеческий фактор:</strong> помогаю командам и собственникам перестать бояться изменений и технологий. Работаю с сопротивлением, страхами и невысказанными ожиданиями так же системно, как с процессами.
+            </p>
         </div>
 
         <!-- ======================================== -->
@@ -748,10 +796,24 @@
         </details>
 
         <details>
+            <summary>Mirra — ИИ-платформа цифрового двойника и подбора команд</summary>
+            <div class="details-content">
+                <p><strong>Контекст:</strong> концепция и разработка — платформа, где страница человека — это чат с его цифровым двойником, а подбор людей и команд идёт по глубинным характеристикам.</p>
+                <ul>
+                    <li><strong>Ядро:</strong> цифровой портрет человека (резюме, интересы, личность, отношения, проекты) + ИИ-двойник, отвечающий от первого лица.</li>
+                    <li><strong>Интерфейс:</strong> чат + карусель фото в «золотой рамке» + анимированное облако тегов с цветовой кодировкой.</li>
+                    <li><strong>Приватность:</strong> у каждого поля уровень видимости (публично / только владельцу); режимы «обычный», «секреты» (на стороне клиента), «зеркало» (как профиль видят другие).</li>
+                    <li><strong>Применение:</strong> найм (ИИ-рекрутер ↔ ИИ-профиль, подбор команды по типам личностей), ИИ-коуч, знакомства.</li>
+                    <li><strong>Статус:</strong> концепция + разработка (MVP).</li>
+                </ul>
+            </div>
+        </details>
+
+        <details>
             <summary>ИИ-продукты и инструменты (личные проекты)</summary>
             <div class="details-content">
                 <ul>
-                    <li><strong>Telegram-бот «меню на неделю»:</strong> составляет меню по нормам веществ на указанное число человек, выдаёт список продуктов по секциям. MVP.</li>
+                    <li><strong>Telegram-бот «меню на неделю»:</strong>
                     <li><strong>Бот для ведения блога</strong> и <strong>бот для ведения курсов</strong> (MVP).</li>
                     <li><strong>Анализатор Telegram-чатов</strong> (в коллаборации).</li>
                     <li><strong>Одностраничные ИИ-приложения</strong> для друзей и знакомых.</li>
@@ -765,6 +827,18 @@
                 <ul>
                     <li><strong>«Бизнес-терапия: как лечить компанию, не убивая владельца»</strong> — руководство для консультантов и собственников: диагностика, узкие места, вариабельность, человеческий фактор.</li>
                     <li><strong>«Опора»</strong> — о работе с телом, опоре и сообществе.</li>
+                </ul>
+            </div>
+        </details>
+
+        <details>
+            <summary>«Язык равенства» — методология работы с человеческим фактором</summary>
+            <div class="details-content">
+                <p><strong>Контекст:</strong> авторская методология и живой документ о том, как люди взаимодействуют на равных и почему изменения встречают сопротивление.</p>
+                <ul>
+                    <li><strong>Ядро:</strong> «равенство = отказ от идеала» — как страх несоответствия порождает осуждение и конфликты.</li>
+                    <li><strong>Инструменты:</strong> замена оценочной «вертикали» на описание, работа с фактом вместо догадки о намерении, модель «мыслетоплива».</li>
+                    <li><strong>Применение:</strong> внедрение изменений и ИИ через снижение сопротивления людей.</li>
                 </ul>
             </div>
         </details>
@@ -885,6 +959,11 @@
                 <a href="mailto:demnatav@gmail.com">demnatav@gmail.com</a>
                 <a href="https://t.me/demnatav" target="_blank">@demnatav</a>
             </div>
+        </div>
+        <div class="container" style="margin-top: 1.2rem;">
+            <a href="https://demnatav.github.io/Interactive_Resume/" target="_blank" style="font-size: 0.9rem;">
+                ✦ Интерактивное резюме — тоже моя разработка: задайте моему цифровому двойнику любой вопрос обо мне — он ответит честно
+            </a>
         </div>
     </footer>
 
