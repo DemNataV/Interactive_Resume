@@ -18,3 +18,17 @@ env/
 # Build / dist
 build/
 dist/
+
+# Секреты и локальные сессии (пароли, куки, токены) — НИКОГДА не в git
+.secrets/
+*.cookies
+*.session
+secrets.json
+.secret
+.env
+.env.local
+.env.*.local
+
+# Артефакты рантайма Mirra Job (логи, сгенерированные отклики)
+job_search/logs/
+job_search/output/

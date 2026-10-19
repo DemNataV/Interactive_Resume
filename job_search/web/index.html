@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mirra Job — ассистент поиска работы</title>
+<style>
+  :root {
+    --gold: #c9a84c;
+    --ink: #1a1a1a;
+    --muted: #6b6357;
+    --cream: #faf6ef;
+    --card: #ffffff;
+    --line: #e6e0d8;
+    --danger: #b3392f;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--cream);
+    color: var(--ink);
+    line-height: 1.55;
+  }
+  header {
+    background: #1a1a1a;
+    color: #fff;
+    padding: 22px 28px;
+    border-bottom: 3px solid var(--gold);
+  }
+  header h1 { margin: 0; font-size: 22px; letter-spacing: .5px; }
+  header h1 span { color: var(--gold); }
+  header p { margin: 6px 0 0; color: #bdb7ab; font-size: 13px; }
+  .wrap { max-width: 980px; margin: 0 auto; padding: 22px 20px 60px; }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 18px 20px;
+    margin-bottom: 18px;
+    box-shadow: 0 1px 3px rgba(0,0,0,.04);
+  }
+  .card h2 {
+    margin: 0 0 14px;
+    font-size: 15px;
+    text-transform: uppercase;
+    letter-spacing: .6px;
+    color: var(--muted);
+  }
+  .row { display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end; }
+  .field { flex: 1 1 180px; min-width: 150px; }
+  label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+  input, select, textarea {
+    width: 100%;
+    padding: 9px 11px;
+    border: 1px solid var(--line);
+    border-radius: 7px;
+    font-size: 14px;
+    font-family: inherit;
+    background: #fff;
+  }
+  textarea { resize: vertical; min-height: 120px; }
+  button {
+    background: var(--gold);
+    color: #1a1a1a;
+    border: none;
+    border-radius: 7px;
+    padding: 10px 16px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: filter .15s;
+  }
+  button:hover { filter: brightness(1.05); }
+  button:disabled { opacity: .55; cursor: not-allowed; }
+  button.ghost { background: transparent; border: 1px solid var(--line); color: var(--ink); font-weight: 500; }
+  button.danger { background: transparent; border: 1px solid var(--danger); color: var(--danger); font-weight: 500; }
+  #vacList { list-style: none; margin: 0; padding: 0; }
+  #vacList li {
+    padding: 11px 4px;
+    border-bottom: 1px solid var(--line);
+    display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+  }
+  #vacList li:last-child { border-bottom: none; }
+  .vtitle { font-weight: 600; flex: 1 1 100%; }
+  .vmeta { color: var(--muted); font-size: 13px; flex: 1 1 100%; }
+  #vacList li.poor { opacity: .45; }
+  .st-badge { font-size: 10px; padding: 1px 7px; border-radius: 9px; font-weight: 700; letter-spacing: .3px; white-space: nowrap; }
+  .st-badge.applied { background: #e3f3e6; color: #1f7a3d; }
+  .st-badge.rejected { background: #f6e4e2; color: #b3392f; }
+  .st-badge.skip { background: #ece7da; color: #8a6d1f; }
+  .vbuttons { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; flex: 1 1 100%; margin-top: 2px; }
+  .vbuttons button { font-size: 11px; padding: 4px 10px; border-radius: 6px; font-weight: 600; }
+  button.st-applied { background: #e3f3e6; color: #1f7a3d; }
+  button.st-rejected { background: #f6e4e2; color: #b3392f; }
+  button.st-skip { background: #ece7da; color: #8a6d1f; }
+  .st-current { font-size: 11px; color: var(--muted); margin-left: auto; white-space: nowrap; }
+  .fit { font-size: 11px; padding: 2px 8px; border-radius: 10px; font-weight: 600; white-space: nowrap; }
+  .fit.good { background: #e3f3e6; color: #1f7a3d; }
+  .fit.partial { background: #f5eed9; color: #8a6d1f; }
+  .fit.poor { background: #ececec; color: #7a7a7a; }
+  .score { font-size: 12px; color: var(--muted); white-space: nowrap; }
+  .why { font-size: 12px; color: var(--muted); font-style: italic; }
+  .tabs { display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0 6px; }
+  .tabs button { font-size: 12px; padding: 6px 12px; }
+  .tabs button.active { background: #1a1a1a; color: #fff; }
+  #output { white-space: normal; }
+  #output h3, #output h4 { margin: 16px 0 6px; }
+  #output h3 { border-left: 3px solid var(--gold); padding-left: 8px; }
+  #output ul { margin: 6px 0; padding-left: 20px; }
+  #output hr { border: none; border-top: 1px solid var(--line); margin: 14px 0; }
+  #output a { color: #8a6d1f; }
+  .status { font-size: 13px; color: var(--muted); min-height: 18px; }
+  .error { color: var(--danger); }
+  .hint { font-size: 12px; color: var(--muted); margin-top: 8px; }
+  .suggest-list { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; }
+  .suggest-item {
+    display: flex; gap: 10px; align-items: flex-start;
+    padding: 9px 11px; border: 1px solid var(--line); border-radius: 7px; background: #fff;
+  }
+  .suggest-item input[type="checkbox"] { width: 16px; height: 16px; margin-top: 3px; flex: 0 0 auto; }
+  .suggest-item .sq { flex: 1 1 auto; }
+  .suggest-item .sq .q { font-weight: 600; font-size: 14px; }
+  .suggest-item .sq .r { color: var(--muted); font-size: 12px; margin-top: 2px; }
+</style>
+</head>
+<body>
+<header>
+  <h1><span>Mirra</span> Job</h1>
+<p>Локальный ассистент поиска работы · Хабр Карьера + ИИ (RouterAI / DeepSeek)</p>
+</header>
+
+<div class="wrap">
+
+  <div class="card">
+    <h2>Настройки ИИ</h2>
+    <div class="row">
+      <div class="field">
+        <label>Провайдер</label>
+        <select id="provider"></select>
+      </div>
+      <div class="field" style="flex:2 1 260px;">
+        <label>API-ключ</label>
+        <input id="key" type="password" placeholder="sk-…">
+      </div>
+      <div class="field" style="flex:2 1 260px;">
+        <label>Модель</label>
+        <input id="model" type="text" placeholder="deepseek-chat">
+      </div>
+      <div>
+        <button id="btnSave">Сохранить</button>
+      </div>
+    </div>
+    <div class="status" id="settingsStatus"></div>
+    <div class="hint">Ключ хранится только в этом браузере (localStorage) и уходит на твой локальный сервер — никуда больше.</div>
+  </div>
+
+  <div class="card">
+    <h2>Профиль для поиска работы</h2>
+    <textarea id="profileText" style="min-height:320px;" placeholder="Профиль загрузится автоматически…"></textarea>
+    <div class="row" style="margin-top:10px;">
+      <button id="btnReloadProfile" class="ghost">Загрузить из файлов</button>
+      <button id="btnSaveProfile">Сохранить правки</button>
+    </div>
+    <div class="status" id="profileStatus"></div>
+    <div class="hint">Это ровно тот текст, который ИИ видит при оценке вакансий, ранжировании и составлении отклика. Можно править прямо здесь — правки сохранятся в браузере и будут использоваться. Исходные md-файлы при этом не меняются.</div>
+  </div>
+
+  <div class="card">
+    <h2>Подходящие запросы (на основе профиля)</h2>
+    <div class="row">
+      <div class="field" style="flex:3 1 320px;">
+        <label>Пожелания (учитываются при генерации)</label>
+        <input id="prefs" type="text" placeholder="например: не хочу оставаться тестировщиком, хочу в управление продуктом…">
+      </div>
+      <div>
+        <button id="btnSuggest">Сгенерировать</button>
+      </div>
+      <div>
+        <button id="btnCheckAll" class="ghost">Отметить все</button>
+      </div>
+    </div>
+    <div class="row" style="margin-top:10px;">
+      <div class="field" style="flex:3 1 320px;">
+        <input id="addQuery" type="text" placeholder="Добавить свой запрос (например: Head of QA)">
+      </div>
+      <div>
+        <button id="btnAddQuery" class="ghost">Добавить</button>
+      </div>
+    </div>
+    <div class="status" id="suggestStatus"></div>
+    <div class="suggest-list" id="suggestList"></div>
+    <div class="hint">Запросы сохраняются автоматически и восстановятся при следующем открытии. Снимай галочки с ненужных — поиск пойдёт только по отмеченным.</div>
+  </div>
+
+  <div class="card">
+<h2>Поиск вакансий (Хабр Карьера)</h2>
+    <div class="row">
+      <div class="field" style="flex:3 1 260px;">
+        <label>Запрос</label>
+        <input id="query" type="text" placeholder="QA lead, кризис-менеджер, внедрение ИИ…">
+      </div>
+      <div>
+        <button id="btnSearch">Найти</button>
+      </div>
+      <div>
+        <button id="btnSearchSelected" class="ghost">Искать по отмеченным →</button>
+      </div>
+    </div>
+    <div class="status" id="searchStatus"></div>
+    <ul id="vacList"></ul>
+  </div>
+
+  <div class="card">
+    <h2>Вакансия для отклика</h2>
+    <div class="hint" style="margin-bottom:10px;">Выбери вакансию из списка выше — или вставь текст вручную ниже.</div>
+    <textarea id="vacancyText" placeholder="Текст вакансии появится здесь после выбора, либо вставь его сам…"></textarea>
+    <div class="row" style="margin-top:12px;">
+      <button id="btnEvaluate">Оценить соответствие</button>
+      <button id="btnApply">Полный отклик (cover + CV + ревью)</button>
+      <button id="btnClear" class="ghost">Очистить</button>
+    </div>
+    <div class="status" id="workStatus"></div>
+  </div>
+
+  <div class="card" id="resultCard" style="display:none;">
+    <h2>Результат</h2>
+    <div class="tabs" id="tabs"></div>
+    <div id="output"></div>
+  </div>
+
+</div>
+
+<script>
+const PROVIDERS = {
+  routerai: { label: "RouterAI", model: "deepseek/deepseek-v4-pro-0813" },
+  deepseek: { label: "DeepSeek", model: "deepseek-chat" }
+};
+
+const $ = id => document.getElementById(id);
+let lastResult = null;
+let suggestData = [];
+let lastVacancies = [];
+
+// --- статусы вакансий (локально, в браузере) ---
+function getStatuses() {
+  try { return JSON.parse(localStorage.getItem('mirra_job_vac_statuses') || '{}'); }
+  catch (e) { return {}; }
+}
+function setStatus(id, status) {
+  const s = getStatuses();
+  if (status) s[id] = status; else delete s[id];
+  localStorage.setItem('mirra_job_vac_statuses', JSON.stringify(s));
+}
+function isHidden(v) {
+  const st = getStatuses()[v.id];
+  return st === 'applied' || st === 'rejected';
+}
+
+function loadSettings() {
+  const s = JSON.parse(localStorage.getItem('mirra_job_settings') || '{}');
+  $('provider').value = s.provider || 'routerai';
+  $('key').value = s.key || '';
+  $('model').value = s.model || PROVIDERS[$('provider').value].model;
+}
+function saveSettings() {
+  const s = {
+    provider: $('provider').value,
+    key: $('key').value.trim(),
+    model: $('model').value.trim() || PROVIDERS[$('provider').value].model
+  };
+  localStorage.setItem('mirra_job_settings', JSON.stringify(s));
+  $('settingsStatus').textContent = 'Сохранено ✓';
+  $('settingsStatus').classList.remove('error');
+  setTimeout(() => $('settingsStatus').textContent = '', 2000);
+}
+function currentSettings() {
+  return {
+    provider: $('provider').value,
+    key: $('key').value.trim(),
+    model: $('model').value.trim() || PROVIDERS[$('provider').value].model
+  };
+}
+
+async function loadProfileFromServer() {
+  $('profileStatus').textContent = 'Загружаю из файлов…';
+  $('profileStatus').classList.remove('error');
+  try {
+    const r = await fetch('/api/profile');
+    const j = await r.json();
+    if (!j.ok) { $('profileStatus').textContent = j.error; $('profileStatus').classList.add('error'); return; }
+    $('profileText').value = j.profile;
+    $('profileStatus').textContent = 'Загружено из файлов (' + j.profile.length + ' символов).';
+  } catch (e) {
+    $('profileStatus').textContent = 'Ошибка: ' + e.message; $('profileStatus').classList.add('error');
+  }
+}
+function saveProfile() {
+  localStorage.setItem('mirra_job_profile', $('profileText').value);
+  $('profileStatus').textContent = 'Сохранено ✓ — теперь ИИ использует эту версию.';
+  $('profileStatus').classList.remove('error');
+  setTimeout(() => { if ($('profileStatus').textContent.startsWith('Сохранено')) $('profileStatus').textContent = ''; }, 2500);
+}
+function restoreProfile() {
+  const saved = localStorage.getItem('mirra_job_profile');
+  if (saved) {
+    $('profileText').value = saved;
+    $('profileStatus').textContent = 'Восстановлена отредактированная версия из браузера. «Загрузить из файлов» вернёт исходную.';
+  } else {
+    loadProfileFromServer();
+  }
+}
+
+// --- markdown-рендер (минимальный) ---
+function mdToHtml(s) {
+  const esc = t => t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const inline = t => t
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g, '<em>$1</em>')
+    .replace(/`([^`]+)`/g, '<code>$1</code>')
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>');
+  let html = '', inList = false;
+  for (let raw of esc(s).split('\n')) {
+    const line = raw;
+    if (/^\s*[-*]\s+/.test(line)) {
+      if (!inList) { html += '<ul>'; inList = true; }
+      html += '<li>' + inline(line.replace(/^\s*[-*]\s+/, '')) + '</li>';
+      continue;
+    } else if (inList) { html += '</ul>'; inList = false; }
+    if (/^#{1,3}\s+/.test(line)) {
+      const m = line.match(/^(#{1,3})\s+(.*)/);
+      const lvl = m[1].length + 2;
+      html += '<h' + lvl + '>' + inline(m[2]) + '</h' + lvl + '>';
+    } else if (/^\s*---+$/.test(line)) {
+      html += '<hr>';
+    } else if (line.trim() !== '') {
+      html += '<p>' + inline(line) + '</p>';
+    }
+  }
+  if (inList) html += '</ul>';
+  return html;
+}
+
+function showResult(tabs) {
+  const tabsEl = $('tabs'), out = $('output');
+  tabsEl.innerHTML = ''; out.innerHTML = '';
+  $('resultCard').style.display = 'block';
+  let active = 0;
+  tabs.forEach((t, i) => {
+    const b = document.createElement('button');
+    b.textContent = t.label;
+    b.onclick = () => { active = i; renderTab(); };
+    tabsEl.appendChild(b);
+  });
+  function renderTab() {
+    [...tabsEl.children].forEach((b, i) => b.classList.toggle('active', i === active));
+    out.innerHTML = mdToHtml(tabs[active].content || '(пусто)');
+  }
+  renderTab();
+}
+
+// --- отображение списка вакансий (с ранжированием) ---
+function renderVacancies(items) {
+  lastVacancies = items;
+  $('vacList').innerHTML = '';
+  const statuses = getStatuses();
+  items.forEach(v => {
+    const li = document.createElement('li');
+    if (v.fit === 'poor') li.className = 'poor';
+    const sal = v.salary ? formatSalary(v.salary) : 'з/п не указана';
+    const title = document.createElement('div'); title.className = 'vtitle'; title.textContent = v.name;
+    const meta = document.createElement('div'); meta.className = 'vmeta';
+    meta.textContent = `${(v.employer && v.employer.name) || ''} · ${sal} · id ${v.id}`;
+    const badgeWrap = document.createElement('div');
+    badgeWrap.style.display = 'flex'; badgeWrap.style.gap = '8px'; badgeWrap.style.alignItems = 'center'; badgeWrap.style.flex = '1 1 auto';
+    if (v.fit) {
+      const fit = document.createElement('span'); fit.className = 'fit ' + v.fit;
+      fit.textContent = ({good: 'подходит', partial: 'частично', poor: 'не подходит'})[v.fit] || v.fit;
+      badgeWrap.appendChild(fit);
+    }
+    if (v.score != null) {
+      const sc = document.createElement('span'); sc.className = 'score'; sc.textContent = v.score + '/100';
+      badgeWrap.appendChild(sc);
+    }
+    if (v.why) {
+      const wh = document.createElement('span'); wh.className = 'why'; wh.textContent = '· ' + v.why;
+      badgeWrap.appendChild(wh);
+    }
+    const open = document.createElement('button'); open.textContent = 'Открыть'; open.className = 'ghost';
+    open.onclick = () => loadVacancy(v.id);
+
+    const vbtns = document.createElement('div'); vbtns.className = 'vbuttons';
+    const st = statuses[v.id] || '';
+    const bApplied = document.createElement('button');
+    bApplied.textContent = '✓ Откликнулась';
+    bApplied.className = st === 'applied' ? 'st-applied' : 'ghost';
+    bApplied.onclick = () => { setStatus(v.id, st === 'applied' ? null : 'applied'); renderVacancies(lastVacancies); };
+    const bRejected = document.createElement('button');
+    bRejected.textContent = '✗ Не подходит';
+    bRejected.className = st === 'rejected' ? 'st-rejected' : 'ghost';
+    bRejected.onclick = () => { setStatus(v.id, st === 'rejected' ? null : 'rejected'); renderVacancies(lastVacancies); };
+    vbtns.appendChild(bApplied); vbtns.appendChild(bRejected);
+    if (v.external_link) {
+      const ext = document.createElement('a');
+      ext.textContent = '↗ Отклик у компании';
+      ext.href = v.external_link;
+      ext.target = '_blank';
+      ext.rel = 'noopener';
+      ext.style.cssText = 'font-size:11px;color:#8a6d1f;text-decoration:underline;align-self:center;';
+      vbtns.appendChild(ext);
+    }
+
+    li.appendChild(title); li.appendChild(meta); li.appendChild(badgeWrap); li.appendChild(open); li.appendChild(vbtns);
+    $('vacList').appendChild(li);
+  });
+}
+
+async function rankAndRender(items) {
+  const hidden = items.filter(v => isHidden(v));
+  items = items.filter(v => !isHidden(v));
+  if (items.length === 0) {
+    renderVacancies(items);
+    $('searchStatus').textContent = `Все ${hidden.length} вакансий уже обработаны (откликнулась/не подходит).`;
+    return;
+  }
+  if (!$('key').value.trim()) {
+    $('searchStatus').textContent = `Показано ${items.length}${hidden.length ? `, скрыто обработанных: ${hidden.length}` : ''} (без ИИ-ключа ранжирование недоступно)`;
+    renderVacancies(items);
+    return;
+  }
+  const body = { ...currentSettings(), vacancies: items, preferences: $('prefs').value.trim(), profile: $('profileText').value };
+  $('searchStatus').textContent = 'Ранжирую под твой профиль…';
+  $('searchStatus').classList.remove('error');
+  try {
+    const r = await fetch('/api/rank_vacancies', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(body) });
+    const j = await r.json();
+    if (!j.ok) { $('searchStatus').textContent = j.error; $('searchStatus').classList.add('error'); renderVacancies(items); return; }
+    const ranked = j.vacancies || items;
+    renderVacancies(ranked);
+    $('searchStatus').textContent = `Отсортировано по соответствию: ${ranked.length} вакансий (серые — не подходят)${hidden.length ? ` · скрыто обработанных: ${hidden.length}` : ''}.`;
+  } catch (e) {
+    $('searchStatus').textContent = 'Ошибка ранжирования: ' + e.message; $('searchStatus').classList.add('error');
+    renderVacancies(items);
+  }
+}
+
+async function search() {
+  const q = $('query').value.trim();
+  if (!q) { $('searchStatus').textContent = 'Введи запрос'; return; }
+  $('searchStatus').textContent = 'Ищу…'; $('btnSearch').disabled = true;
+  $('searchStatus').classList.remove('error');
+  try {
+    const r = await fetch(`/api/habr/search?query=${encodeURIComponent(q)}&per_page=20`);
+    const j = await r.json();
+    if (!j.ok) { $('searchStatus').textContent = j.error; $('searchStatus').classList.add('error'); return; }
+    const items = j.data.items || [];
+    $('searchStatus').textContent = `Найдено: ${j.data.found || 0}. Показано: ${items.length}.`;
+    await rankAndRender(items);
+  } catch (e) {
+    $('searchStatus').textContent = 'Ошибка: ' + e.message; $('searchStatus').classList.add('error');
+  } finally {
+    $('btnSearch').disabled = false;
+  }
+}
+
+// --- подходящие запросы из профиля ---
+async function suggestQueries() {
+  if (!$('key').value.trim()) { $('suggestStatus').textContent = 'Укажи API-ключ в настройках'; $('suggestStatus').classList.add('error'); return; }
+  localStorage.setItem('mirra_job_prefs', $('prefs').value.trim());
+  const body = { ...currentSettings(), preferences: $('prefs').value.trim(), profile: $('profileText').value };
+  $('suggestStatus').textContent = 'Генерирую запросы…'; $('suggestStatus').classList.remove('error');
+  $('btnSuggest').disabled = true;
+  try {
+    const r = await fetch('/api/suggest_queries', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(body) });
+    const j = await r.json();
+    if (!j.ok) { $('suggestStatus').textContent = j.error; $('suggestStatus').classList.add('error'); return; }
+    suggestData = (j.queries || []).map(q => ({ ...q, checked: true }));
+    saveQueries();
+    renderSuggestList();
+    $('suggestStatus').textContent = `Предложено ${suggestData.length} запросов. Отметь нужные и нажми «Искать по отмеченным».`;
+  } catch (e) {
+    $('suggestStatus').textContent = 'Ошибка: ' + e.message; $('suggestStatus').classList.add('error');
+  } finally {
+    $('btnSuggest').disabled = false;
+  }
+}
+
+function renderSuggestList() {
+  const list = $('suggestList');
+  list.innerHTML = '';
+  if (suggestData.length === 0) {
+    list.innerHTML = '<div class="hint">Пока нет запросов. Нажми «Сгенерировать» или добавь свой запрос ниже.</div>';
+    return;
+  }
+  suggestData.forEach((it, i) => {
+    const div = document.createElement('div'); div.className = 'suggest-item';
+    const cb = document.createElement('input'); cb.type = 'checkbox';
+    cb.checked = it.checked !== false;
+    cb.dataset.idx = i;
+    cb.onchange = () => { suggestData[i].checked = cb.checked; saveQueries(); };
+    const sq = document.createElement('div'); sq.className = 'sq';
+    const q = document.createElement('div'); q.className = 'q'; q.textContent = it.query;
+    const r = document.createElement('div'); r.className = 'r'; r.textContent = it.reason || '';
+    sq.appendChild(q); sq.appendChild(r);
+    div.appendChild(cb); div.appendChild(sq);
+    list.appendChild(div);
+  });
+}
+
+function saveQueries() {
+  localStorage.setItem('mirra_job_queries', JSON.stringify(suggestData));
+}
+
+function loadQueries() {
+  try {
+    const s = JSON.parse(localStorage.getItem('mirra_job_queries') || 'null');
+    suggestData = Array.isArray(s) ? s : [];
+  } catch (e) { suggestData = []; }
+  renderSuggestList();
+}
+
+function addQuery() {
+  const inp = $('addQuery');
+  const q = inp.value.trim();
+  if (!q) { $('suggestStatus').textContent = 'Введи запрос для добавления'; return; }
+  suggestData.push({ query: q, reason: 'добавлено вручную', checked: true });
+  inp.value = '';
+  saveQueries();
+  renderSuggestList();
+  $('suggestStatus').textContent = 'Добавлено: ' + q;
+  $('suggestStatus').classList.remove('error');
+}
+
+function getCheckedQueries() {
+  const boxes = [...document.querySelectorAll('#suggestList input[type="checkbox"]')];
+  return boxes.filter(b => b.checked).map(b => suggestData[Number(b.dataset.idx)].query);
+}
+
+async function searchSelected() {
+  const queries = getCheckedQueries();
+  if (queries.length === 0) { $('suggestStatus').textContent = 'Отметь хотя бы один запрос'; return; }
+  $('searchStatus').textContent = `Ищу по ${queries.length} запросам…`; $('searchStatus').classList.remove('error');
+  $('btnSearchSelected').disabled = true;
+  $('vacList').innerHTML = '';
+  const seen = new Set();
+  const all = [];
+  try {
+    for (const q of queries) {
+      const r = await fetch(`/api/habr/search?query=${encodeURIComponent(q)}&per_page=10`);
+      const j = await r.json();
+      if (!j.ok) { throw new Error(`«${q}»: ${j.error}`); }
+      for (const v of (j.data.items || [])) {
+        if (!seen.has(v.id)) { seen.add(v.id); all.push(v); }
+      }
+    }
+    await rankAndRender(all);
+  } catch (e) {
+    $('searchStatus').textContent = 'Ошибка: ' + e.message; $('searchStatus').classList.add('error');
+  } finally {
+    $('btnSearchSelected').disabled = false;
+  }
+}
+
+function checkAll() {
+  suggestData.forEach(it => it.checked = true);
+  saveQueries();
+  renderSuggestList();
+}
+function formatSalary(s) {
+  const c = s.currency || '';
+  if (s.from && s.to) return `${s.from}–${s.to} ${c}`;
+  if (s.from) return `от ${s.from} ${c}`;
+  if (s.to) return `до ${s.to} ${c}`;
+  return c || '—';
+}
+async function loadVacancy(id) {
+  $('workStatus').textContent = 'Загружаю вакансию…';
+  try {
+    const r = await fetch('/api/habr/vacancy/' + id);
+    const j = await r.json();
+    if (!j.ok) { $('workStatus').textContent = j.error; return; }
+    $('vacancyText').value = j.text;
+    $('workStatus').textContent = 'Вакансия загружена. Можно оценивать или делать отклик.';
+  } catch (e) {
+    $('workStatus').textContent = 'Ошибка: ' + e.message;
+  }
+}
+
+// --- LLM действия ---
+async function evaluate() {
+  await llmAction('/api/evaluate', (j) => showResult([{label: 'Оценка', content: j.result}]));
+}
+async function applyAll() {
+  await llmAction('/api/apply', (j) => showResult([
+    {label: 'Финал', content: j.final},
+    {label: 'Cover', content: j.cover},
+    {label: 'CV', content: j.cv},
+    {label: 'Ревью', content: j.feedback}
+  ]));
+}
+async function llmAction(path, onOk) {
+  const vt = $('vacancyText').value.trim();
+  if (!vt) { $('workStatus').textContent = 'Сначала выбери или вставь вакансию'; return; }
+  if (!$('key').value.trim()) { $('workStatus').textContent = 'Укажи API-ключ в настройках'; return; }
+  const body = { ...currentSettings(), vacancy_text: vt, profile: $('profileText').value };
+  $('workStatus').textContent = 'Работаю (ИИ думает, это может занять ~1–2 мин)…';
+  $('workStatus').classList.remove('error');
+  $('btnEvaluate').disabled = true; $('btnApply').disabled = true;
+  try {
+    const r = await fetch(path, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(body)
+    });
+    const j = await r.json();
+    if (!j.ok) { $('workStatus').textContent = j.error; $('workStatus').classList.add('error'); return; }
+    $('workStatus').textContent = 'Готово ✓';
+    onOk(j);
+  } catch (e) {
+    $('workStatus').textContent = 'Ошибка: ' + e.message; $('workStatus').classList.add('error');
+  } finally {
+    $('btnEvaluate').disabled = false; $('btnApply').disabled = false;
+  }
+}
+
+// --- инициализация ---
+(function init() {
+  const sel = $('provider');
+  sel.innerHTML = '';
+  Object.entries(PROVIDERS).forEach(([k, v]) => {
+    const o = document.createElement('option'); o.value = k; o.textContent = v.label;
+    sel.appendChild(o);
+  });
+  sel.onchange = () => { $('model').value = PROVIDERS[sel.value].model; };
+  $('btnSave').onclick = saveSettings;
+  $('btnSuggest').onclick = suggestQueries;
+  $('btnAddQuery').onclick = addQuery;
+  $('addQuery').addEventListener('keydown', e => { if (e.key === 'Enter') addQuery(); });
+  $('prefs').addEventListener('keydown', e => { if (e.key === 'Enter') suggestQueries(); });
+  $('btnSearchSelected').onclick = searchSelected;
+  $('btnCheckAll').onclick = checkAll;
+  $('btnSearch').onclick = search;
+  $('query').addEventListener('keydown', e => { if (e.key === 'Enter') search(); });
+  $('btnEvaluate').onclick = evaluate;
+  $('btnApply').onclick = applyAll;
+  $('btnClear').onclick = () => { $('vacancyText').value = ''; $('workStatus').textContent = ''; $('resultCard').style.display = 'none'; };
+  loadSettings();
+  loadQueries();
+  $('prefs').value = localStorage.getItem('mirra_job_prefs') || '';
+  $('btnReloadProfile').onclick = loadProfileFromServer;
+  $('btnSaveProfile').onclick = saveProfile;
+  restoreProfile();
+})();
+</script>
+</body>
+</html>
