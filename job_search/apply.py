@@ -16,19 +16,8 @@ def evaluate_fit(vacancy_text, profile, url=None, key=None, model=None):
     return llm.chat(messages, temperature=0.3, url=url, key=key, model=model)
 
 
-def suggest_queries(profile, preferences="", url=None, key=None, model=None):
-    """На основе профиля (и пожеланий) предлагает список поисковых запросов.
-
-    Возвращает список словарей [{"query": ..., "reason": ...}].
-    """
-    user = "ПРОФИЛЬ КАНДИДАТА:\n\n" + profile
-    if preferences and preferences.strip():
-        user += "\n\nПОЖЕЛАНИЯ КАНДИДАТА:\n" + preferences.strip()
-    text = llm.chat([
-        {"role": "system", "content": config.SUGGEST_QUERIES_SYSTEM_PROMPT},
-        {"role": "user", "content": user},
-    ], temperature=0.5, url=url, key=key, model=model)
-
+def _parse_queries(text):
+    """Парсит ответ LLM в список [{"query": ..., "reason": ...}]."""
     queries = []
     for line in text.splitlines():
         line = line.strip()
@@ -44,6 +33,36 @@ def suggest_queries(profile, preferences="", url=None, key=None, model=None):
         else:
             queries.append({"query": line, "reason": ""})
     return queries
+
+
+def suggest_queries(profile, preferences="", url=None, key=None, model=None):
+    """На основе профиля (и пожеланий) предлагает список поисковых запросов.
+
+    Возвращает список словарей [{"query": ..., "reason": ...}].
+    """
+    user = "ПРОФИЛЬ КАНДИДАТА:\n\n" + profile
+    if preferences and preferences.strip():
+        user += "\n\nПОЖЕЛАНИЯ КАНДИДАТА:\n" + preferences.strip()
+    text = llm.chat([
+        {"role": "system", "content": config.SUGGEST_QUERIES_SYSTEM_PROMPT},
+        {"role": "user", "content": user},
+    ], temperature=0.5, url=url, key=key, model=model)
+    return _parse_queries(text)
+
+
+def suggest_adjacent_queries(profile, preferences="", url=None, key=None, model=None):
+    """Предлагает НЕОЧЕВИДНЫЕ, смежные роли, о которых кандидат мог не думать.
+
+    Возвращает список словарей [{"query": ..., "reason": ...}].
+    """
+    user = "ПРОФИЛЬ КАНДИДАТА:\n\n" + profile
+    if preferences and preferences.strip():
+        user += "\n\nПОЖЕЛАНИЯ КАНДИДАТА:\n" + preferences.strip()
+    text = llm.chat([
+        {"role": "system", "content": config.SUGGEST_ADJACENT_SYSTEM_PROMPT},
+        {"role": "user", "content": user},
+    ], temperature=0.7, url=url, key=key, model=model)
+    return _parse_queries(text)
 
 
 def rank_vacancies(vacancies, profile, preferences="", url=None, key=None, model=None):
@@ -62,6 +81,7 @@ def rank_vacancies(vacancies, profile, preferences="", url=None, key=None, model
 
     for i in range(0, len(vacancies), batch):
         chunk = vacancies[i:i + batch]
+        debug_log.log("RANK батч %d-%d из %d вакансий" % (i + 1, i + len(chunk), len(vacancies)))
         rows = []
         for v in chunk:
             comp = (v.get("employer") or {}).get("name", "")
@@ -200,17 +220,23 @@ def _parse_lines(text):
     return scored
 
 
-def draft_application(vacancy_text, profile, url=None, key=None, model=None):
-    cover = llm.chat([
+def draft_cover(vacancy_text, profile, url=None, key=None, model=None):
+    return llm.chat([
         {"role": "system", "content": config.COVER_SYSTEM_PROMPT},
         {"role": "user", "content": "ПРОФИЛЬ:\n\n" + profile + "\n\nВАКАНСИЯ:\n\n" + vacancy_text},
-    ], temperature=0.7, url=url, key=key, model=model)
+    ], temperature=0.7, max_tokens=config.APPLY_MAX_TOKENS, url=url, key=key, model=model)
 
-    cv = llm.chat([
+
+def draft_cv(vacancy_text, profile, url=None, key=None, model=None):
+    return llm.chat([
         {"role": "system", "content": config.CV_SYSTEM_PROMPT},
         {"role": "user", "content": "ПРОФИЛЬ:\n\n" + profile + "\n\nВАКАНСИЯ:\n\n" + vacancy_text},
-    ], temperature=0.4, url=url, key=key, model=model)
+    ], temperature=0.4, max_tokens=config.APPLY_MAX_TOKENS, url=url, key=key, model=model)
 
+
+def draft_application(vacancy_text, profile, url=None, key=None, model=None):
+    cover = draft_cover(vacancy_text, profile, url=url, key=key, model=model)
+    cv = draft_cv(vacancy_text, profile, url=url, key=key, model=model)
     return cover, cv
 
 

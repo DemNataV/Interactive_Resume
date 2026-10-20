@@ -22,6 +22,7 @@ import config
 import profile_reader
 import apply as apply_mod
 import habr_api
+import debug_log
 
 WEB_DIR = Path(__file__).resolve().parent / "web"
 PORT = 8765
@@ -108,20 +109,24 @@ class Handler(BaseHTTPRequestHandler):
             query = qs.get("query", [""])[0]
             per_page = int(qs.get("per_page", ["20"])[0])
             page = int(qs.get("page", ["1"])[0])
+            debug_log.log("SERVER habr/search query=%s page=%s per_page=%s" % (query, page, per_page))
             try:
                 data = habr_api.search_vacancies(query, per_page=per_page, page=page)
                 self._json({"ok": True, "data": data})
             except RuntimeError as e:
+                debug_log.log("SERVER habr/search ОШИБКА: %s" % e)
                 self._json({"ok": False, "error": str(e)})
             return
 
         if path.startswith("/api/habr/vacancy/"):
             vid = path.rsplit("/", 1)[-1]
+            debug_log.log("SERVER habr/vacancy id=%s" % vid)
             try:
                 v = habr_api.get_vacancy(vid)
                 text = habr_api.format_vacancy(v)
                 self._json({"ok": True, "text": text, "url": v.get("alternate_url", "")})
             except Exception as e:
+                debug_log.log("SERVER habr/vacancy id=%s ОШИБКА: %s" % (vid, e))
                 self._json({"ok": False, "error": str(e)})
             return
 
@@ -129,6 +134,7 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_POST(self):
         path = urllib.parse.urlparse(self.path).path
+        debug_log.log("SERVER POST %s" % path)
 
         if path == "/api/evaluate":
             try:
@@ -148,9 +154,15 @@ class Handler(BaseHTTPRequestHandler):
                 body = self._read_body()
                 url, key, model = _resolve_llm_params(body)
                 profile = body.get("profile") or profile_reader.load_profile()
-                queries = apply_mod.suggest_queries(
-                    profile, preferences=body.get("preferences", ""), url=url, key=key, model=model
-                )
+                mode = body.get("mode", "direct")
+                if mode == "adjacent":
+                    queries = apply_mod.suggest_adjacent_queries(
+                        profile, preferences=body.get("preferences", ""), url=url, key=key, model=model
+                    )
+                else:
+                    queries = apply_mod.suggest_queries(
+                        profile, preferences=body.get("preferences", ""), url=url, key=key, model=model
+                    )
                 self._json({"ok": True, "queries": queries})
             except Exception as e:
                 self._json({"ok": False, "error": str(e)})
@@ -162,12 +174,14 @@ class Handler(BaseHTTPRequestHandler):
                 url, key, model = _resolve_llm_params(body)
                 profile = body.get("profile") or profile_reader.load_profile()
                 vacancies = body.get("vacancies") or []
+                debug_log.log("SERVER rank_vacancies: %d вакансий" % len(vacancies))
                 ranked = apply_mod.rank_vacancies(
                     vacancies, profile, preferences=body.get("preferences", ""),
                     url=url, key=key, model=model
                 )
                 self._json({"ok": True, "vacancies": ranked})
             except Exception as e:
+                debug_log.log("SERVER rank_vacancies ОШИБКА: %s" % e)
                 self._json({"ok": False, "error": str(e)})
             return
 
@@ -188,6 +202,28 @@ class Handler(BaseHTTPRequestHandler):
                     "final": final,
                 })
             except Exception as e:
+                self._json({"ok": False, "error": str(e)})
+            return
+
+        if path == "/api/apply_light":
+            try:
+                body = self._read_body()
+                url, key, model = _resolve_llm_params(body)
+                profile = body.get("profile") or profile_reader.load_profile()
+                vt = body.get("vacancy_text", "")
+                mode = body.get("mode", "both")
+                debug_log.log("SERVER apply_light mode=%s" % mode)
+                if mode == "cover":
+                    cover = apply_mod.draft_cover(vt, profile, url=url, key=key, model=model)
+                    self._json({"ok": True, "cover": cover})
+                elif mode == "cv":
+                    cv = apply_mod.draft_cv(vt, profile, url=url, key=key, model=model)
+                    self._json({"ok": True, "cv": cv})
+                else:
+                    cover, cv = apply_mod.draft_application(vt, profile, url=url, key=key, model=model)
+                    self._json({"ok": True, "cover": cover, "cv": cv})
+            except Exception as e:
+                debug_log.log("SERVER apply_light ОШИБКА: %s" % e)
                 self._json({"ok": False, "error": str(e)})
             return
 

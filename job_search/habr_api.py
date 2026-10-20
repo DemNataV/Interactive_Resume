@@ -9,25 +9,42 @@ items[] с полями id, name, employer.name, salary {from,to,currency}, alte
 """
 import json
 import re
+import time
 import urllib.error
 import urllib.parse
 import urllib.request
 
 import config
+import debug_log
 
 BASE = "https://career.habr.com"
 
+# Защита от 429 (Too Many Requests): Хабр Карьера ограничивает частоту запросов.
+# При 429 делаем паузу и повторяем, с нарастающей задержкой.
+MAX_RETRIES = 3
+RETRY_BASE_DELAY = 3  # секунд; множитель нарастает: 3, 6, 9
 
-def _get_bytes(url):
+
+def _get_bytes(url, retries=MAX_RETRIES):
     req = urllib.request.Request(url, headers={"User-Agent": config.HABR_USER_AGENT})
-    try:
-        with urllib.request.urlopen(req, timeout=60) as resp:
-            return resp.read()
-    except urllib.error.HTTPError as e:
-        raise RuntimeError("Хабр Карьера вернула ошибку HTTP %d" % e.code) from e
-    except (urllib.error.URLError, OSError) as e:
-        # Сетевая ошибка / таймаут / сброс соединения — не роняем сервер.
-        raise RuntimeError("Сетевая ошибка при обращении к Хабр Карьере: %s" % e) from e
+    for attempt in range(retries + 1):
+        try:
+            with urllib.request.urlopen(req, timeout=60) as resp:
+                return resp.read()
+        except urllib.error.HTTPError as e:
+            if e.code == 429 and attempt < retries:
+                delay = RETRY_BASE_DELAY * (attempt + 1)
+                debug_log.log("HABR 429 (попытка %d/%d) url=%s — пауза %dс и повтор" % (attempt + 1, retries, url, delay))
+                time.sleep(delay)
+                continue
+            debug_log.log("HABR HTTP %d url=%s" % (e.code, url))
+            raise RuntimeError("Хабр Карьера вернула ошибку HTTP %d" % e.code) from e
+        except (urllib.error.URLError, OSError) as e:
+            # Сетевая ошибка / таймаут / сброс соединения — не роняем сервер.
+            debug_log.log("HABR сетевая ошибка url=%s: %s" % (url, e))
+            raise RuntimeError("Сетевая ошибка при обращении к Хабр Карьере: %s" % e) from e
+    debug_log.log("HABR исчерпаны повторы 429 url=%s" % url)
+    raise RuntimeError("Хабр Карьера вернула ошибку HTTP 429 (превышен лимит запросов)")
 
 
 def _get_json(url):
@@ -54,7 +71,10 @@ def search_vacancies(query, page=1, per_page=20):
 
 
 def _normalize(v):
-    company = (v.get("company") or {}).get("title", "")
+    company_obj = v.get("company") or {}
+    company = company_obj.get("title", "")
+    company_href = company_obj.get("href", "")
+    company_url = (BASE + company_href) if isinstance(company_href, str) and company_href else ""
     salary = v.get("salary") or {}
     pred = v.get("predictedSalary") or {}
     from_ = salary.get("from") or pred.get("from")
@@ -70,10 +90,11 @@ def _normalize(v):
     return {
         "id": vid,
         "name": v.get("title", ""),
-        "employer": {"name": company},
+        "employer": {"name": company, "url": company_url},
         "salary": {"from": from_, "to": to_, "currency": cur},
         "alternate_url": BASE + (v.get("href") or ("/vacancies/" + str(vid))),
         "external_link": external_link,
+        "company_url": company_url,
         "location": locations,
         "skills": skills,
         "qualification": v.get("qualification", ""),
@@ -158,10 +179,19 @@ def _extract_location(job_location):
 
 
 def _strip_html(text):
-    text = re.sub(r"<[^>]+>", " ", text)
+    # Блочные теги -> переносы строк, чтобы сохранить абзацы и списки.
+    text = re.sub(r"(?i)<br\s*/?>", "\n", text)
+    text = re.sub(r"(?i)</(p|div|li|h[1-6]|ul|ol|section|article)>", "\n", text)
+    text = re.sub(r"(?i)<li[^>]*>", "\n• ", text)
+    text = re.sub(r"(?i)<(p|div|h[1-6])[^>]*>", "", text)
+    # Остальные теги убираем.
+    text = re.sub(r"<[^>]+>", "", text)
     text = re.sub(r"&nbsp;|&#xa0;", " ", text)
     text = re.sub(r"&amp;", "&", text)
     text = re.sub(r"&lt;", "<", text)
     text = re.sub(r"&gt;", ">", text)
-    text = re.sub(r"\s+", " ", text)
+    text = re.sub(r"&quot;", '"', text)
+    # Схлопываем множественные пробелы и пустые строки.
+    lines = [ln.strip() for ln in text.split("\n")]
+    text = "\n".join(ln for ln in lines if ln)
     return text.strip()
