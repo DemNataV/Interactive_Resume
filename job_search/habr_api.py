@@ -19,32 +19,40 @@ import debug_log
 
 BASE = "https://career.habr.com"
 
-# Защита от 429 (Too Many Requests): Хабр Карьера ограничивает частоту запросов.
-# При 429 делаем паузу и повторяем, с нарастающей задержкой.
+# Защита от сбоев при серии запросов: 429 (Too Many Requests),
+# сброс соединения / таймауты и временные 5xx. Повторяем с нарастающей паузой.
 MAX_RETRIES = 3
 RETRY_BASE_DELAY = 3  # секунд; множитель нарастает: 3, 6, 9
+RETRYABLE_HTTP = {429, 502, 503, 504}
 
 
 def _get_bytes(url, retries=MAX_RETRIES):
     req = urllib.request.Request(url, headers={"User-Agent": config.HABR_USER_AGENT})
+    last_err = None
     for attempt in range(retries + 1):
         try:
             with urllib.request.urlopen(req, timeout=60) as resp:
                 return resp.read()
         except urllib.error.HTTPError as e:
-            if e.code == 429 and attempt < retries:
+            if e.code in RETRYABLE_HTTP and attempt < retries:
                 delay = RETRY_BASE_DELAY * (attempt + 1)
-                debug_log.log("HABR 429 (попытка %d/%d) url=%s — пауза %dс и повтор" % (attempt + 1, retries, url, delay))
+                debug_log.log("HABR HTTP %d (попытка %d/%d) url=%s — пауза %dс и повтор" % (e.code, attempt + 1, retries, url, delay))
                 time.sleep(delay)
+                last_err = e
                 continue
             debug_log.log("HABR HTTP %d url=%s" % (e.code, url))
             raise RuntimeError("Хабр Карьера вернула ошибку HTTP %d" % e.code) from e
         except (urllib.error.URLError, OSError) as e:
-            # Сетевая ошибка / таймаут / сброс соединения — не роняем сервер.
-            debug_log.log("HABR сетевая ошибка url=%s: %s" % (url, e))
+            if attempt < retries:
+                delay = RETRY_BASE_DELAY * (attempt + 1)
+                debug_log.log("HABR сетевая ошибка (попытка %d/%d) url=%s: %s — пауза %dс и повтор" % (attempt + 1, retries, url, e, delay))
+                time.sleep(delay)
+                last_err = e
+                continue
+            debug_log.log("HABR сетевая ошибка исчерпаны повторы url=%s: %s" % (url, e))
             raise RuntimeError("Сетевая ошибка при обращении к Хабр Карьере: %s" % e) from e
-    debug_log.log("HABR исчерпаны повторы 429 url=%s" % url)
-    raise RuntimeError("Хабр Карьера вернула ошибку HTTP 429 (превышен лимит запросов)")
+    debug_log.log("HABR исчерпаны повторы url=%s (последняя ошибка: %s)" % (url, last_err))
+    raise RuntimeError("Хабр Карьера не отвечает: %s" % last_err) from last_err
 
 
 def _get_json(url):
